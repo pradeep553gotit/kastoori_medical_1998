@@ -1,0 +1,10 @@
+.env
+.env.*
+!/.env.example
+config.js
+extracted_methods.js
+node_modules/
+.vercel/
+dist/
+coverage/
+*.log

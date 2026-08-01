@@ -14,6 +14,7 @@ class LocalStorageMock {
 global.localStorage = new LocalStorageMock();
 
 class TestApp {
+    _safeSetItem(key, value) { localStorage.setItem(key, value); return true; }
     triggerNotification() { /* no-op for tests */ }
     showToast() { /* no-op for tests */ }
     _pushInventoryToCloud() { /* no-op for tests */ }

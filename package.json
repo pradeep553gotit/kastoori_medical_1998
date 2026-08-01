@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "pretest": "node scripts/extract-test-methods.js",
+    "test": "node test_shared_parser_phaseB.js && node test_shared_parser_bill_quality.js && node test_ocr_provider_policy.js && node test_ocr_integration.js && node test_ocr_worker_lifecycle.js && node test_scanning_engine.js && node test_batch_ocr_ui_wiring.js && node test_dup_prevention.js && node test_fefo_deduction.js && node test_strip_cut_policy.js"
+  },
+  "devDependencies": {}
+}
