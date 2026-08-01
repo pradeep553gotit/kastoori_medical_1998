@@ -1,0 +1,7 @@
+{
+  "commit": "REPLACE_WITH_git_rev-parse_HEAD_OUTPUT",
+  "builtAt": "REPLACE_WITH_CURRENT_UTC_TIMESTAMP",
+  "appVersion": "1.0.0",
+  "debugPatchesActive": true,
+  "note": "Fill in commit and builtAt right before each deploy: git rev-parse HEAD"
+}

@@ -1,0 +1,31 @@
+Add these lines to index.html, right before the closing </body> tag,
+AFTER the existing <script src="app.js"></script> line:
+
+<script src="scroll-diagnostics-mode.js"></script>
+<script>
+  // Self-verification: if scroll-diagnostics-mode.js failed to load or
+  // error out, show an impossible-to-miss red banner instead of silently
+  // doing nothing. Only runs when ?debug=scroll is in the URL, same as
+  // the main diagnostics file, so it is fully inert in normal use.
+  (function () {
+    if (new URLSearchParams(location.search).get("debug") !== "scroll") return;
+    setTimeout(function () {
+      if (!window.__scrollDiagV2) {
+        const err = document.createElement("div");
+        err.textContent = "\u274C scroll-diagnostics-mode.js FAILED TO LOAD (check Network tab / file path / deploy)";
+        err.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#b91c1c;color:#fff;font:bold 13px monospace;padding:10px;text-align:center;";
+        document.documentElement.appendChild(err);
+      }
+    }, 2000);
+  })();
+</script>
+
+Also copy version.json (included in this package) to the SAME root folder
+as index.html. Before you commit, fill in the real commit SHA, e.g.:
+
+  git rev-parse HEAD
+
+and paste that value into version.json's "commit" field, and set "builtAt"
+to the current timestamp. This is what lets the diagnostics panel prove,
+on the live phone, exactly which commit is actually running -- no more
+relying on the Vercel dashboard alone.

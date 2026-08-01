@@ -1,0 +1,10 @@
+--- a/style.css
++++ b/style.css
+@@ Fix: table wrappers were locking out vertical page scroll @@
+ .table-responsive,
+ .table-responsive table,
+ .category-filter-container,
+ [style*="overflow-x"] {
+-    touch-action: pan-x;
++    touch-action: pan-x pan-y;
+ }

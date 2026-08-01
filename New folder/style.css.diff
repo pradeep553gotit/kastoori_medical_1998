@@ -1,0 +1,11 @@
+--- /home/claude/style.css.before	2026-07-25 18:01:19.309222331 +0000
++++ /home/claude/repo/style.css	2026-07-25 18:01:25.170161241 +0000
+@@ -124,7 +124,7 @@
+ .table-responsive table,
+ .category-filter-container,
+ [style*="overflow-x"] {
+-    touch-action: pan-x;
++    touch-action: pan-x pan-y;
+ }
+ 
+ .sidebar,

@@ -1,0 +1,562 @@
+[
+  {
+    "file": "bill_clean_000.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-24592\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nPARACETAMOL 500MG     B5506     04/27   13    226.21  18%\nAZITHROMYCIN 500MG    B7912     01/26   10    81.22   18%\nPARACETAMOL 500MG     B4257     12/29   19    145.78  12%\nPARACETAMOL 500MG     B3615     12/29   26    97.8    5%\nROSEDAY 10MG          B2674     02/29   11    120.51  12%\nPANTOPRAZOLE 40MG     B1711     12/29   39    54.95   12%\nAZITHROMYCIN 500MG    B5803     11/28   41    73.84   5%\nAMOXICILLIN 250MG     B4733     05/26   19    262.62  12%\nPANTOPRAZOLE 40MG     B8428     11/28   15    123.65  5%\nPANTOPRAZOLE 40MG     B2169     10/27   39    224.16  5%\nGLIMEPIRIDE 2MG       B7216     05/27   48    110.8   5%\nAMLODIPINE 5MG        B1525     06/29   22    38.53   18%\nROSEDAY 10MG          B4483     11/29   30    267.71  18%\nGLIMEPIRIDE 2MG       B3340     05/27   20    228.6   18%\nPANTOPRAZOLE 40MG     B8019     10/29   28    81.41   5%\nLEVOCETIRIZINE 5MG    B2489     01/26   14    195.68  18%\nTELMA 40MG            B2040     07/29   43    298.91  18%\nPANTOPRAZOLE 40MG     B1188     11/26   48    267.74  12%\n\nTotal Items: 18\nInvoice Total: Rs. 11991.78",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 18
+  },
+  {
+    "file": "bill_clean_001.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-24621\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nDOLO 650MG            B8123     03/29   5     287.07  18%\nPANTOPRAZOLE 40MG     B9201     03/26   45    103.56  18%\nCETIRIZINE 10MG       B3504     06/27   39    286.98  18%\nPARACETAMOL 500MG     B6310     08/26   12    280.15  12%\nAMLODIPINE 5MG        B1949     04/26   10    224.93  5%\nMETFORMIN 500MG       B3103     11/29   40    66.24   18%\nTELMA 40MG            B4470     09/27   50    107.28  18%\nSHELCAL 500MG         B8177     09/29   12    89.41   5%\nROSEDAY 10MG          B1344     10/27   42    81.66   5%\nAMOXICILLIN 250MG     B4750     02/26   26    39.84   5%\nPANTOPRAZOLE 40MG     B8953     04/27   41    181.34  5%\nLEVOCETIRIZINE 5MG    B7669     04/26   11    204.52  12%\nTELMA 40MG            B7735     08/26   48    202.97  18%\n\nTotal Items: 13\nInvoice Total: Rs. 3279.43",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "bill_clean_002.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-54473\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nATORVASTATIN 10MG     B5073     04/27   39    145.61  12%\nOMEPRAZOLE 20MG       B5563     08/27   9     144.08  18%\nATORVASTATIN 10MG     B1828     11/26   10    279.38  5%\nOMEPRAZOLE 20MG       B7658     08/29   18    262.1   5%\nOMEPRAZOLE 20MG       B7209     01/29   21    279.43  12%\nDOLO 650MG            B7930     12/29   14    73.17   5%\nAMOXICILLIN 250MG     B9883     01/28   8     34.04   12%\nOMEPRAZOLE 20MG       B1931     09/26   16    39.19   5%\nAMLODIPINE 5MG        B7615     02/27   42    186.47  18%\nAZITHROMYCIN 500MG    B7868     11/28   21    77.19   18%\nROSEDAY 10MG          B4910     05/29   13    208.07  12%\nGLIMEPIRIDE 2MG       B6180     02/26   34    193.92  18%\nATORVASTATIN 10MG     B2200     09/27   37    94.26   12%\nAZITHROMYCIN 500MG    B5002     06/28   15    142.69  18%\n\nTotal Items: 14\nInvoice Total: Rs. 11146.02",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 14
+  },
+  {
+    "file": "bill_clean_003.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-95717\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nPARACETAMOL 500MG     B5905     11/26   13    94.05   5%\nMETFORMIN 500MG       B5462     05/27   50    116.01  18%\nPANTOPRAZOLE 40MG     B9280     08/28   8     45.84   12%\nPANTOPRAZOLE 40MG     B1722     01/28   13    198.39  12%\nOMEPRAZOLE 20MG       B8239     09/29   40    22.71   5%\nMETFORMIN 500MG       B9938     01/28   42    174.71  12%\nMETFORMIN 500MG       B1685     05/28   7     271.7   5%\nAMLODIPINE 5MG        B2684     06/29   44    229.85  5%\nOMEPRAZOLE 20MG       B3900     07/26   16    226.24  12%\nTELMA 40MG            B5065     05/27   49    50.27   5%\nLEVOCETIRIZINE 5MG    B4644     04/29   27    105.45  5%\nAMLODIPINE 5MG        B1387     11/27   30    111.91  5%\nPANTOPRAZOLE 40MG     B6753     11/29   48    294.72  18%\nROSEDAY 10MG          B1452     02/28   16    182.57  12%\nAMOXICILLIN 250MG     B2776     10/29   27    223.99  12%\nTELMA 40MG            B9379     02/29   41    73.22   5%\nTELMA 40MG            B1027     09/27   28    140.76  18%\n\nTotal Items: 17\nInvoice Total: Rs. 13970.02",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 17
+  },
+  {
+    "file": "bill_clean_004.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-51145\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nATORVASTATIN 10MG     B5920     09/28   47    134.35  12%\nDOLO 650MG            B3085     04/29   47    283.3   18%\nOMEPRAZOLE 20MG       B5930     07/26   24    100.34  12%\nROSEDAY 10MG          B8618     08/29   48    79.84   12%\nOMEPRAZOLE 20MG       B2389     05/28   10    249.16  5%\nDOLO 650MG            B4680     04/27   6     32.94   12%\nAZITHROMYCIN 500MG    B8461     07/27   50    214.98  12%\nAUGMENTIN 625MG       B4997     03/26   11    237.96  5%\nOMEPRAZOLE 20MG       B9486     08/26   40    89.78   5%\nGLIMEPIRIDE 2MG       B3184     08/28   33    191.54  18%\nTELMA 40MG            B9976     08/27   35    146.02  5%\nPANTOPRAZOLE 40MG     B9540     08/27   22    143.16  18%\nDOLO 650MG            B4841     05/28   25    270.05  5%\nMETFORMIN 500MG       B3471     04/29   49    62.79   5%\nAZITHROMYCIN 500MG    B7797     07/28   39    150.46  5%\nCETIRIZINE 10MG       B7883     07/26   41    126.51  5%\nSHELCAL 500MG         B5892     07/29   39    229.3   18%\n\nTotal Items: 17\nInvoice Total: Rs. 12398.29",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 17
+  },
+  {
+    "file": "bill_clean_005.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-73993\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAMLODIPINE 5MG        B5471     07/29   6     128.88  18%\nAUGMENTIN 625MG       B3704     08/27   44    169.55  12%\nPARACETAMOL 500MG     B2375     11/29   13    262.72  5%\nAMOXICILLIN 250MG     B5262     07/28   18    147.32  12%\nAUGMENTIN 625MG       B5558     07/28   10    151.69  18%\nAMOXICILLIN 250MG     B6733     04/26   46    31.27   5%\nAMLODIPINE 5MG        B4266     01/27   20    55.34   18%\nATORVASTATIN 10MG     B4571     08/28   28    66.98   18%\nATORVASTATIN 10MG     B3683     05/26   42    27.19   12%\nAUGMENTIN 625MG       B7498     12/27   9     185.79  18%\nAMLODIPINE 5MG        B2669     12/28   48    188.12  5%\n\nTotal Items: 11\nInvoice Total: Rs. 12350.95",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 11
+  },
+  {
+    "file": "bill_clean_006.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-15383\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nSHELCAL 500MG         B9728     07/28   9     161.67  12%\nPARACETAMOL 500MG     B7882     08/26   32    289.02  18%\nGLIMEPIRIDE 2MG       B3506     07/27   38    290.33  12%\nLEVOCETIRIZINE 5MG    B8616     07/28   25    258.48  5%\nPANTOPRAZOLE 40MG     B8385     04/29   41    190.89  12%\nROSEDAY 10MG          B1470     08/28   16    156.51  12%\nPANTOPRAZOLE 40MG     B6576     05/28   40    22.84   5%\nAZITHROMYCIN 500MG    B4954     12/29   36    175.45  5%\nLEVOCETIRIZINE 5MG    B9041     08/26   10    102.39  12%\nAMLODIPINE 5MG        B6016     11/28   35    174.97  12%\nTELMA 40MG            B6419     06/29   22    105.85  5%\nATORVASTATIN 10MG     B4155     06/26   39    286.25  18%\nOMEPRAZOLE 20MG       B4138     04/29   22    222.88  18%\nDOLO 650MG            B2647     04/28   19    121.05  12%\nPARACETAMOL 500MG     B9751     03/28   7     292.8   18%\nDOLO 650MG            B3068     11/29   11    264.36  18%\nDOLO 650MG            B8690     08/29   26    71.62   5%\n\nTotal Items: 17\nInvoice Total: Rs. 5282.22",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 17
+  },
+  {
+    "file": "bill_clean_007.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-24953\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAZITHROMYCIN 500MG    B7565     08/26   41    196.24  5%\nMETFORMIN 500MG       B3444     10/28   10    298.3   5%\nTELMA 40MG            B4697     09/29   33    274.38  12%\nTELMA 40MG            B6003     10/26   44    288.83  5%\nCETIRIZINE 10MG       B4457     05/26   15    87.16   18%\nAZITHROMYCIN 500MG    B3564     01/29   33    213.02  12%\nDOLO 650MG            B1534     04/28   50    99.16   12%\nAZITHROMYCIN 500MG    B4824     05/27   32    52.14   5%\nMETFORMIN 500MG       B5352     03/26   8     66.46   12%\nDOLO 650MG            B8195     02/29   49    105.15  12%\nPANTOPRAZOLE 40MG     B9199     09/29   33    42.52   5%\nTELMA 40MG            B6280     10/28   6     45.57   18%\nPARACETAMOL 500MG     B5415     10/26   16    151.74  18%\nGLIMEPIRIDE 2MG       B5557     03/29   45    247.99  5%\nLEVOCETIRIZINE 5MG    B6700     07/28   25    207.64  5%\n\nTotal Items: 15\nInvoice Total: Rs. 6287.45",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 15
+  },
+  {
+    "file": "bill_clean_008.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-74942\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nDOLO 650MG            B7561     09/26   34    44.66   12%\nROSEDAY 10MG          B2899     07/26   47    263.42  12%\nTELMA 40MG            B1888     04/28   44    231.8   18%\nGLIMEPIRIDE 2MG       B1845     04/28   40    56.68   12%\nGLIMEPIRIDE 2MG       B8941     02/26   45    190.48  5%\nOMEPRAZOLE 20MG       B6091     09/26   40    134.24  5%\nATORVASTATIN 10MG     B8560     02/27   36    281.14  12%\nPANTOPRAZOLE 40MG     B7807     08/29   20    147.9   5%\nAUGMENTIN 625MG       B4122     10/27   9     97.35   12%\nROSEDAY 10MG          B9318     05/26   23    223.29  18%\nLEVOCETIRIZINE 5MG    B3434     08/29   27    113.08  18%\nAUGMENTIN 625MG       B8460     06/27   49    86.87   12%\nAMLODIPINE 5MG        B7730     01/28   35    217.46  12%\nAUGMENTIN 625MG       B3492     08/26   13    160.64  18%\nROSEDAY 10MG          B2644     08/26   38    274.92  5%\nMETFORMIN 500MG       B7717     11/27   9     151.46  12%\nROSEDAY 10MG          B7512     11/26   26    258.66  18%\nAUGMENTIN 625MG       B6188     11/29   39    30.05   5%\nAMLODIPINE 5MG        B5708     04/26   32    293.93  18%\n\nTotal Items: 19\nInvoice Total: Rs. 11150.58",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 19
+  },
+  {
+    "file": "bill_clean_009.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-68153\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nOMEPRAZOLE 20MG       B5906     01/26   25    242.92  12%\nSHELCAL 500MG         B7141     07/27   20    168.73  18%\nOMEPRAZOLE 20MG       B3785     03/26   44    263.84  18%\nAMLODIPINE 5MG        B9153     10/27   19    149.12  12%\nGLIMEPIRIDE 2MG       B5183     11/26   34    272.34  18%\nOMEPRAZOLE 20MG       B2210     08/28   42    103.76  12%\nPANTOPRAZOLE 40MG     B8484     05/27   29    258.93  5%\nAMLODIPINE 5MG        B7248     10/28   41    102.84  18%\nDOLO 650MG            B1359     11/29   22    22.27   18%\n\nTotal Items: 9\nInvoice Total: Rs. 12118.05",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 9
+  },
+  {
+    "file": "bill_clean_010.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-89482\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nLEVOCETIRIZINE 5MG    B5689     04/28   19    198.25  18%\nPANTOPRAZOLE 40MG     B3240     11/26   45    200.98  12%\nGLIMEPIRIDE 2MG       B1546     10/28   13    45.24   12%\nROSEDAY 10MG          B7807     03/27   13    240.22  12%\nPANTOPRAZOLE 40MG     B3695     05/29   23    229.04  12%\nATORVASTATIN 10MG     B8673     02/27   19    260.84  18%\nAUGMENTIN 625MG       B6992     02/29   5     94.05   5%\nGLIMEPIRIDE 2MG       B7038     11/28   42    126.69  18%\n\nTotal Items: 8\nInvoice Total: Rs. 14223.79",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 8
+  },
+  {
+    "file": "bill_clean_011.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-98452\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAMLODIPINE 5MG        B8724     01/28   44    81.98   5%\nGLIMEPIRIDE 2MG       B5951     11/29   12    59.14   5%\nDOLO 650MG            B9071     02/26   20    268.43  5%\nAUGMENTIN 625MG       B8432     06/29   42    227.84  5%\nTELMA 40MG            B2622     08/29   22    29.16   12%\nCETIRIZINE 10MG       B8264     08/27   28    47.82   18%\nSHELCAL 500MG         B9920     11/28   8     131.48  5%\nATORVASTATIN 10MG     B8450     02/27   46    199.06  5%\nAMOXICILLIN 250MG     B6464     04/27   41    77.46   18%\n\nTotal Items: 9\nInvoice Total: Rs. 4693.05",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 9
+  },
+  {
+    "file": "bill_clean_012.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-40539\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nROSEDAY 10MG          B3417     10/26   22    260.35  5%\nMETFORMIN 500MG       B9850     05/27   12    205.1   5%\nMETFORMIN 500MG       B1243     06/27   42    110.66  5%\nPANTOPRAZOLE 40MG     B1858     03/29   38    51.82   5%\nLEVOCETIRIZINE 5MG    B8344     06/26   33    161.07  18%\nAMOXICILLIN 250MG     B9543     05/29   46    289.93  5%\nLEVOCETIRIZINE 5MG    B7580     07/26   36    219.47  12%\nAZITHROMYCIN 500MG    B2323     06/27   9     55.33   18%\nROSEDAY 10MG          B7240     10/28   34    161.55  12%\nATORVASTATIN 10MG     B2874     11/27   32    146.44  5%\nTELMA 40MG            B6553     08/29   31    224.29  12%\n\nTotal Items: 11\nInvoice Total: Rs. 7547.93",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 11
+  },
+  {
+    "file": "bill_clean_013.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-43408\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nSHELCAL 500MG         B3500     11/29   9     45.54   5%\nAZITHROMYCIN 500MG    B8075     02/28   13    175.78  18%\nROSEDAY 10MG          B3002     07/28   47    283.52  12%\nAMOXICILLIN 250MG     B5712     10/28   27    49.01   18%\nCETIRIZINE 10MG       B3535     11/29   19    257.24  12%\nSHELCAL 500MG         B2882     05/27   32    256.64  18%\nPARACETAMOL 500MG     B5381     01/27   22    216.76  12%\nROSEDAY 10MG          B6751     01/27   14    178.57  12%\nAZITHROMYCIN 500MG    B3324     12/26   10    228.91  5%\nAUGMENTIN 625MG       B7878     08/28   15    123.61  18%\nROSEDAY 10MG          B2391     01/27   15    231.24  5%\nAZITHROMYCIN 500MG    B5458     08/29   36    189.98  12%\nPANTOPRAZOLE 40MG     B4531     09/26   27    140.38  12%\nLEVOCETIRIZINE 5MG    B9633     11/28   7     81.75   18%\nAMOXICILLIN 250MG     B1125     04/28   18    234.86  12%\nDOLO 650MG            B6375     02/26   36    229.16  5%\nMETFORMIN 500MG       B7229     09/27   37    176.44  18%\nSHELCAL 500MG         B2180     07/26   32    25.25   5%\n\nTotal Items: 18\nInvoice Total: Rs. 13207.43",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 18
+  },
+  {
+    "file": "bill_clean_014.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-66267\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAUGMENTIN 625MG       B7843     05/26   30    25.84   12%\nOMEPRAZOLE 20MG       B8538     12/28   10    142.28  5%\nAMLODIPINE 5MG        B8138     10/29   38    42.02   12%\nROSEDAY 10MG          B4630     06/27   9     162.94  5%\nCETIRIZINE 10MG       B6724     06/27   20    48.79   12%\nCETIRIZINE 10MG       B3842     10/27   46    41.1    18%\nLEVOCETIRIZINE 5MG    B8601     10/29   48    278.76  18%\nROSEDAY 10MG          B6179     03/29   9     151.3   18%\nDOLO 650MG            B5500     10/26   27    162.05  12%\nGLIMEPIRIDE 2MG       B8404     01/26   28    252.88  5%\nAZITHROMYCIN 500MG    B9307     07/29   42    175.21  18%\nAMOXICILLIN 250MG     B8368     10/27   25    189.4   18%\nMETFORMIN 500MG       B2013     08/26   26    295.07  5%\nOMEPRAZOLE 20MG       B1641     04/29   33    166.74  18%\nOMEPRAZOLE 20MG       B6962     06/28   29    134.46  12%\nAMOXICILLIN 250MG     B6482     02/28   11    176.23  12%\nDOLO 650MG            B5128     12/27   26    42.82   18%\n\nTotal Items: 17\nInvoice Total: Rs. 3838.57",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 17
+  },
+  {
+    "file": "bill_clean_015.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-50662\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAUGMENTIN 625MG       B3112     10/26   24    176.5   18%\nROSEDAY 10MG          B3093     11/26   46    207.73  18%\nSHELCAL 500MG         B1298     06/28   16    286.33  12%\nLEVOCETIRIZINE 5MG    B4145     04/27   14    41.61   5%\nAMOXICILLIN 250MG     B6517     10/27   43    125.48  5%\nOMEPRAZOLE 20MG       B3712     12/29   7     135.04  18%\nAMLODIPINE 5MG        B8277     10/28   33    85.52   5%\nDOLO 650MG            B8684     04/28   48    285.2   12%\nGLIMEPIRIDE 2MG       B5616     07/29   15    248.73  18%\nMETFORMIN 500MG       B5096     01/29   28    175.27  5%\nATORVASTATIN 10MG     B5670     02/27   22    145.81  18%\nMETFORMIN 500MG       B8167     02/27   33    267.7   5%\nTELMA 40MG            B1872     07/28   20    128.13  5%\n\nTotal Items: 13\nInvoice Total: Rs. 6873.86",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "bill_clean_016.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-51770\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nATORVASTATIN 10MG     B6493     03/27   7     100.33  12%\nMETFORMIN 500MG       B8685     08/26   10    25.32   5%\nMETFORMIN 500MG       B9991     12/29   12    237.33  5%\nDOLO 650MG            B2996     01/27   31    198.91  18%\nGLIMEPIRIDE 2MG       B2029     02/29   43    170.1   18%\nAMLODIPINE 5MG        B3352     05/29   5     192.15  5%\nTELMA 40MG            B4068     11/26   38    292.9   5%\nPARACETAMOL 500MG     B7397     08/26   45    128.33  12%\n\nTotal Items: 8\nInvoice Total: Rs. 5297.45",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 8
+  },
+  {
+    "file": "bill_clean_017.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-56805\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAZITHROMYCIN 500MG    B6649     04/26   42    225.85  12%\nMETFORMIN 500MG       B1726     06/28   46    69.02   18%\nGLIMEPIRIDE 2MG       B8840     11/27   13    37.67   12%\nAMOXICILLIN 250MG     B5807     04/26   17    268.02  12%\nDOLO 650MG            B9444     07/29   21    30.25   18%\nCETIRIZINE 10MG       B5687     06/26   46    112.94  5%\nSHELCAL 500MG         B8159     07/29   29    114.93  5%\nLEVOCETIRIZINE 5MG    B9151     06/28   10    223.58  5%\n\nTotal Items: 8\nInvoice Total: Rs. 7597.89",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 8
+  },
+  {
+    "file": "bill_clean_018.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-81496\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nDOLO 650MG            B6262     02/26   25    205.06  12%\nGLIMEPIRIDE 2MG       B7981     03/29   27    145.2   18%\nSHELCAL 500MG         B8126     05/26   9     207.93  12%\nSHELCAL 500MG         B9406     12/27   6     59.98   18%\nGLIMEPIRIDE 2MG       B1570     03/26   20    237.98  12%\nSHELCAL 500MG         B7272     10/26   43    62.96   12%\nSHELCAL 500MG         B7095     08/26   41    58.55   12%\nAUGMENTIN 625MG       B6150     11/28   20    288.95  5%\nOMEPRAZOLE 20MG       B9176     09/29   40    52.97   12%\nGLIMEPIRIDE 2MG       B4515     10/28   49    276.61  12%\n\nTotal Items: 10\nInvoice Total: Rs. 4602.32",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 10
+  },
+  {
+    "file": "bill_clean_019.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-19706\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nGLIMEPIRIDE 2MG       B3828     12/29   10    246.94  12%\nSHELCAL 500MG         B2063     09/28   24    258.38  18%\nOMEPRAZOLE 20MG       B6922     09/27   12    295.84  5%\nAMLODIPINE 5MG        B9094     01/28   40    180.24  12%\nMETFORMIN 500MG       B2412     02/28   30    299.89  18%\nLEVOCETIRIZINE 5MG    B9612     07/29   41    40.65   12%\nAZITHROMYCIN 500MG    B8372     08/28   13    265.83  18%\nOMEPRAZOLE 20MG       B3114     07/26   12    165.07  12%\nOMEPRAZOLE 20MG       B3653     06/27   27    285.3   18%\nDOLO 650MG            B2292     05/27   45    287.78  12%\n\nTotal Items: 10\nInvoice Total: Rs. 3627.21",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 10
+  },
+  {
+    "file": "bill_clean_020.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-90534\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAZITHROMYCIN 500MG    B9234     11/27   42    283.65  5%\nOMEPRAZOLE 20MG       B6531     10/26   6     42.74   18%\nPANTOPRAZOLE 40MG     B4453     10/29   44    198.92  12%\nDOLO 650MG            B5949     08/27   48    133.71  12%\nAZITHROMYCIN 500MG    B1981     03/29   31    155.59  5%\nROSEDAY 10MG          B3353     06/28   27    293.1   5%\nSHELCAL 500MG         B9437     09/26   25    87.69   5%\nPANTOPRAZOLE 40MG     B8366     04/27   11    34.17   12%\nTELMA 40MG            B5067     03/28   41    221.92  5%\nOMEPRAZOLE 20MG       B9163     09/29   36    266.14  12%\nPARACETAMOL 500MG     B2475     07/29   20    80.24   12%\nAMOXICILLIN 250MG     B1828     05/29   43    267.06  18%\n\nTotal Items: 12\nInvoice Total: Rs. 10742.77",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 12
+  },
+  {
+    "file": "bill_clean_021.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-80345\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nPARACETAMOL 500MG     B2761     07/27   21    223.7   12%\nSHELCAL 500MG         B1741     07/26   41    177.31  12%\nDOLO 650MG            B2204     07/29   40    98.32   18%\nATORVASTATIN 10MG     B3108     02/29   28    242.57  12%\nSHELCAL 500MG         B3363     04/29   37    31.27   5%\nMETFORMIN 500MG       B6456     08/29   14    189.75  18%\nMETFORMIN 500MG       B6373     10/28   15    130.03  18%\nDOLO 650MG            B6511     09/29   50    177.62  12%\nPARACETAMOL 500MG     B7035     06/26   31    183.44  18%\nPARACETAMOL 500MG     B8775     05/27   8     183.39  5%\nAUGMENTIN 625MG       B3421     11/27   7     180.32  18%\nATORVASTATIN 10MG     B4125     01/29   25    137.26  12%\n\nTotal Items: 12\nInvoice Total: Rs. 10976.5",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 12
+  },
+  {
+    "file": "bill_clean_022.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-75774\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nLEVOCETIRIZINE 5MG    B2020     12/27   38    78.06   12%\nLEVOCETIRIZINE 5MG    B9609     07/28   16    148.71  18%\nROSEDAY 10MG          B9950     06/28   44    155.57  5%\nPANTOPRAZOLE 40MG     B5890     04/28   23    217.37  18%\nLEVOCETIRIZINE 5MG    B6194     08/28   40    281.44  18%\nPANTOPRAZOLE 40MG     B5715     02/29   30    249.15  5%\nDOLO 650MG            B1689     05/26   27    278.72  18%\nPANTOPRAZOLE 40MG     B8849     04/27   39    95.92   18%\nPANTOPRAZOLE 40MG     B3249     02/27   20    34.21   18%\nAMLODIPINE 5MG        B4814     01/26   31    112.48  12%\nATORVASTATIN 10MG     B3252     01/27   31    202.81  12%\nLEVOCETIRIZINE 5MG    B4267     05/28   23    200.85  5%\nAMLODIPINE 5MG        B9767     12/26   16    137.01  5%\nAMOXICILLIN 250MG     B7504     08/27   23    265.49  5%\n\nTotal Items: 14\nInvoice Total: Rs. 5879.1",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 14
+  },
+  {
+    "file": "bill_clean_023.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-24064\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nROSEDAY 10MG          B5662     08/29   13    258.3   12%\nPANTOPRAZOLE 40MG     B4159     02/28   15    224.71  18%\nPANTOPRAZOLE 40MG     B4050     01/28   23    178.98  5%\nOMEPRAZOLE 20MG       B7643     07/28   10    132.23  5%\nOMEPRAZOLE 20MG       B3303     08/28   20    21.91   12%\nAMLODIPINE 5MG        B8319     05/28   24    183.09  18%\nPARACETAMOL 500MG     B5285     11/28   49    86.16   18%\nATORVASTATIN 10MG     B8625     05/27   30    212.1   18%\nDOLO 650MG            B2923     11/28   28    192.1   5%\nMETFORMIN 500MG       B8834     03/29   43    124.61  18%\nLEVOCETIRIZINE 5MG    B9806     11/27   20    210.5   18%\nAZITHROMYCIN 500MG    B9609     08/28   9     276.83  5%\nAMOXICILLIN 250MG     B9972     09/27   41    170.26  5%\nROSEDAY 10MG          B9525     08/26   48    77.51   18%\nLEVOCETIRIZINE 5MG    B2489     09/29   8     146.96  18%\nTELMA 40MG            B8484     10/26   40    149.47  12%\nPARACETAMOL 500MG     B7487     05/26   18    181.93  5%\n\nTotal Items: 17\nInvoice Total: Rs. 7508.07",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 17
+  },
+  {
+    "file": "bill_clean_024.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-18357\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAMOXICILLIN 250MG     B2130     08/26   23    134.48  5%\nTELMA 40MG            B7135     07/29   29    125.18  18%\nMETFORMIN 500MG       B6697     02/27   39    130.06  5%\nAMLODIPINE 5MG        B1056     01/28   34    208.58  18%\nTELMA 40MG            B9715     07/27   20    148.98  5%\nPANTOPRAZOLE 40MG     B4088     12/26   7     246.65  12%\nPARACETAMOL 500MG     B4943     04/26   11    186.3   12%\nAMOXICILLIN 250MG     B5009     12/26   30    142.91  18%\nCETIRIZINE 10MG       B1924     03/28   19    248.42  18%\nROSEDAY 10MG          B6253     04/28   14    295.99  18%\nAMLODIPINE 5MG        B7775     05/28   8     175.88  18%\nOMEPRAZOLE 20MG       B7999     09/29   8     292.24  18%\nAUGMENTIN 625MG       B9592     06/29   31    61.78   12%\nOMEPRAZOLE 20MG       B9813     08/27   19    104.21  18%\nMETFORMIN 500MG       B8586     01/29   31    176.04  5%\nAUGMENTIN 625MG       B4978     05/27   26    201.08  12%\nSHELCAL 500MG         B2514     09/27   8     95.17   18%\nAMOXICILLIN 250MG     B2192     04/27   35    78.49   12%\nDOLO 650MG            B1251     04/27   12    229.13  12%\n\nTotal Items: 19\nInvoice Total: Rs. 13887.74",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 19
+  },
+  {
+    "file": "bill_clean_025.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-89220\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nCETIRIZINE 10MG       B7498     04/28   23    126.59  18%\nSHELCAL 500MG         B6053     05/28   37    267.19  12%\nATORVASTATIN 10MG     B8692     06/27   28    107.62  5%\nAMLODIPINE 5MG        B3390     01/28   40    281.73  18%\nTELMA 40MG            B5836     03/27   26    84.41   18%\nAMLODIPINE 5MG        B9180     09/28   21    233.74  12%\nLEVOCETIRIZINE 5MG    B8550     03/28   15    59.19   18%\nLEVOCETIRIZINE 5MG    B4015     09/26   38    29.47   5%\nAMOXICILLIN 250MG     B1104     07/27   45    84.8    18%\nMETFORMIN 500MG       B1149     04/29   28    36.93   18%\nLEVOCETIRIZINE 5MG    B8993     01/26   39    174.46  5%\nPARACETAMOL 500MG     B9673     12/28   39    293.69  5%\nTELMA 40MG            B3937     02/26   38    61.69   5%\nPANTOPRAZOLE 40MG     B6807     05/29   10    124.45  12%\nGLIMEPIRIDE 2MG       B4984     12/27   24    211.53  5%\nAMOXICILLIN 250MG     B2531     07/29   29    174.76  5%\nPARACETAMOL 500MG     B3807     02/29   32    200.57  12%\nATORVASTATIN 10MG     B9653     01/27   18    272.36  18%\nLEVOCETIRIZINE 5MG    B5441     01/26   48    279.16  18%\n\nTotal Items: 19\nInvoice Total: Rs. 9325.63",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 19
+  },
+  {
+    "file": "bill_clean_026.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-33508\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nROSEDAY 10MG          B1256     04/27   50    249.85  5%\nDOLO 650MG            B3661     10/27   41    253.7   12%\nROSEDAY 10MG          B7288     12/27   49    222.77  18%\nSHELCAL 500MG         B1879     02/29   19    254.83  12%\nAUGMENTIN 625MG       B6347     01/28   33    157.37  12%\nAUGMENTIN 625MG       B8075     03/29   10    236.21  12%\nAMLODIPINE 5MG        B2204     02/28   14    126.4   18%\nMETFORMIN 500MG       B7383     06/28   11    45.63   12%\n\nTotal Items: 8\nInvoice Total: Rs. 7781.57",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 8
+  },
+  {
+    "file": "bill_clean_027.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-45358\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nATORVASTATIN 10MG     B3170     02/27   32    145.68  18%\nTELMA 40MG            B2692     01/26   27    175.18  18%\nROSEDAY 10MG          B7311     01/28   31    128.58  5%\nAMLODIPINE 5MG        B9537     03/29   15    58.88   12%\nPANTOPRAZOLE 40MG     B9079     03/26   15    141.71  12%\nDOLO 650MG            B8933     02/28   21    284.38  18%\nLEVOCETIRIZINE 5MG    B4203     08/26   13    105.3   12%\nROSEDAY 10MG          B7224     06/29   26    140.57  18%\nMETFORMIN 500MG       B5922     06/27   35    107.97  12%\nROSEDAY 10MG          B5775     12/29   41    238.95  12%\nAUGMENTIN 625MG       B5592     07/28   12    280.98  5%\nOMEPRAZOLE 20MG       B1440     12/29   50    78.7    12%\nAZITHROMYCIN 500MG    B7703     11/29   13    197.33  5%\nPANTOPRAZOLE 40MG     B3525     12/29   29    40.71   18%\nLEVOCETIRIZINE 5MG    B7566     09/29   39    30.29   12%\nAZITHROMYCIN 500MG    B2791     04/28   15    201.16  5%\nAUGMENTIN 625MG       B6432     07/26   5     47.61   5%\nAMLODIPINE 5MG        B8303     06/29   34    236.26  18%\nMETFORMIN 500MG       B6651     01/29   11    102.72  5%\nATORVASTATIN 10MG     B3321     06/28   26    147.49  5%\n\nTotal Items: 20\nInvoice Total: Rs. 8774.49",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 20
+  },
+  {
+    "file": "bill_clean_028.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-72411\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nATORVASTATIN 10MG     B8178     12/29   25    38.81   5%\nATORVASTATIN 10MG     B1370     06/26   48    244.01  18%\nAMLODIPINE 5MG        B9454     03/27   26    176.76  12%\nAMLODIPINE 5MG        B7636     11/27   16    199.33  12%\nAUGMENTIN 625MG       B1478     12/27   33    185.82  12%\nPARACETAMOL 500MG     B4519     04/28   50    246.44  5%\nATORVASTATIN 10MG     B9796     03/28   25    75.18   5%\nPANTOPRAZOLE 40MG     B9019     09/28   43    128.82  12%\nATORVASTATIN 10MG     B6700     06/29   44    68.31   18%\nDOLO 650MG            B2388     11/27   25    53.0    12%\nATORVASTATIN 10MG     B3999     06/27   37    128.77  18%\nMETFORMIN 500MG       B7286     07/27   36    197.94  18%\nOMEPRAZOLE 20MG       B3733     08/28   13    72.39   12%\n\nTotal Items: 13\nInvoice Total: Rs. 10052.33",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "bill_clean_029.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-11256\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nLEVOCETIRIZINE 5MG    B3236     04/29   40    161.52  12%\nTELMA 40MG            B9056     07/29   36    66.83   18%\nPARACETAMOL 500MG     B4613     05/26   22    82.96   12%\nOMEPRAZOLE 20MG       B8492     10/29   40    163.03  18%\nATORVASTATIN 10MG     B5389     09/28   39    250.33  5%\nGLIMEPIRIDE 2MG       B9951     04/29   11    226.08  18%\nAMLODIPINE 5MG        B5877     01/29   21    117.6   5%\nGLIMEPIRIDE 2MG       B2923     04/27   42    212.96  18%\nTELMA 40MG            B3719     10/27   18    247.79  5%\nSHELCAL 500MG         B9720     05/27   25    294.12  12%\nDOLO 650MG            B5380     09/26   13    289.58  12%\nAMOXICILLIN 250MG     B5543     11/27   49    262.5   5%\nMETFORMIN 500MG       B6277     04/29   36    59.81   18%\n\nTotal Items: 13\nInvoice Total: Rs. 5493.32",
+    "type": "bill",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "order_clean_000.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAUGMENTIN 625MG          120\nAZITHROMYCIN 500MG       200\nAZITHROMYCIN 500MG       120\nPANTOPRAZOLE 40MG        200\nSHELCAL 500MG            120\nLEVOCETIRIZINE 5MG       90\nPARACETAMOL 500MG        240\nAZITHROMYCIN 500MG       200\nGLIMEPIRIDE 2MG          200\nSHELCAL 500MG            240\nAZITHROMYCIN 500MG       240\nAUGMENTIN 625MG          60\nTELMA 40MG               240\nCETIRIZINE 10MG          120",
+    "type": "order",
+    "degraded": false,
+    "n_items": 14
+  },
+  {
+    "file": "order_clean_001.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nROSEDAY 10MG             240\nDOLO 650MG               90\nMETFORMIN 500MG          150\nLEVOCETIRIZINE 5MG       240\nROSEDAY 10MG             200\nAMOXICILLIN 250MG        30\nATORVASTATIN 10MG        200\nGLIMEPIRIDE 2MG          30\nATORVASTATIN 10MG        240\nOMEPRAZOLE 20MG          120\nGLIMEPIRIDE 2MG          30\nTELMA 40MG               60",
+    "type": "order",
+    "degraded": false,
+    "n_items": 12
+  },
+  {
+    "file": "order_clean_002.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nMETFORMIN 500MG          200\nDOLO 650MG               60\nPANTOPRAZOLE 40MG        30\nSHELCAL 500MG            90\nAZITHROMYCIN 500MG       90\nOMEPRAZOLE 20MG          30\nAUGMENTIN 625MG          200\nDOLO 650MG               200\nAMLODIPINE 5MG           120\nAZITHROMYCIN 500MG       200\nATORVASTATIN 10MG        30\nCETIRIZINE 10MG          120\nAZITHROMYCIN 500MG       60\nAMLODIPINE 5MG           150\nGLIMEPIRIDE 2MG          30\nPARACETAMOL 500MG        200\nROSEDAY 10MG             240\nATORVASTATIN 10MG        240\nTELMA 40MG               200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 19
+  },
+  {
+    "file": "order_clean_003.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nLEVOCETIRIZINE 5MG       30\nAMLODIPINE 5MG           120\nAZITHROMYCIN 500MG       200\nATORVASTATIN 10MG        30\nROSEDAY 10MG             90\nDOLO 650MG               60\nAUGMENTIN 625MG          240\nMETFORMIN 500MG          200\nMETFORMIN 500MG          30\nPARACETAMOL 500MG        150",
+    "type": "order",
+    "degraded": false,
+    "n_items": 10
+  },
+  {
+    "file": "order_clean_004.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nOMEPRAZOLE 20MG          120\nSHELCAL 500MG            200\nCETIRIZINE 10MG          200\nMETFORMIN 500MG          120\nGLIMEPIRIDE 2MG          240\nCETIRIZINE 10MG          30\nATORVASTATIN 10MG        60\nATORVASTATIN 10MG        150\nAUGMENTIN 625MG          90\nTELMA 40MG               90\nMETFORMIN 500MG          60\nPANTOPRAZOLE 40MG        200\nAZITHROMYCIN 500MG       60\nDOLO 650MG               240\nPARACETAMOL 500MG        240\nDOLO 650MG               60\nCETIRIZINE 10MG          200\nAUGMENTIN 625MG          90",
+    "type": "order",
+    "degraded": false,
+    "n_items": 18
+  },
+  {
+    "file": "order_clean_005.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAMOXICILLIN 250MG        240\nAMLODIPINE 5MG           120\nAUGMENTIN 625MG          30\nAMLODIPINE 5MG           120\nAZITHROMYCIN 500MG       150\nPARACETAMOL 500MG        90\nROSEDAY 10MG             60\nAUGMENTIN 625MG          240\nTELMA 40MG               90\nOMEPRAZOLE 20MG          240\nLEVOCETIRIZINE 5MG       240\nAZITHROMYCIN 500MG       30\nAZITHROMYCIN 500MG       30\nPANTOPRAZOLE 40MG        60\nAMOXICILLIN 250MG        30\nAUGMENTIN 625MG          150\nDOLO 650MG               200\nTELMA 40MG               120",
+    "type": "order",
+    "degraded": false,
+    "n_items": 18
+  },
+  {
+    "file": "order_clean_006.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAUGMENTIN 625MG          30\nMETFORMIN 500MG          90\nAZITHROMYCIN 500MG       90\nAZITHROMYCIN 500MG       150\nCETIRIZINE 10MG          240\nMETFORMIN 500MG          150\nROSEDAY 10MG             120\nAZITHROMYCIN 500MG       90\nTELMA 40MG               200\nAMLODIPINE 5MG           30\nAMLODIPINE 5MG           30\nTELMA 40MG               30\nGLIMEPIRIDE 2MG          150\nAMOXICILLIN 250MG        90\nOMEPRAZOLE 20MG          30\nPARACETAMOL 500MG        200\nMETFORMIN 500MG          200\nPARACETAMOL 500MG        60\nLEVOCETIRIZINE 5MG       90",
+    "type": "order",
+    "degraded": false,
+    "n_items": 19
+  },
+  {
+    "file": "order_clean_007.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nPANTOPRAZOLE 40MG        60\nSHELCAL 500MG            60\nPANTOPRAZOLE 40MG        200\nATORVASTATIN 10MG        240\nPARACETAMOL 500MG        90\nTELMA 40MG               90\nAZITHROMYCIN 500MG       90\nAZITHROMYCIN 500MG       120\nGLIMEPIRIDE 2MG          150\nSHELCAL 500MG            30\nLEVOCETIRIZINE 5MG       240\nOMEPRAZOLE 20MG          90\nOMEPRAZOLE 20MG          90\nATORVASTATIN 10MG        150\nATORVASTATIN 10MG        60\nPARACETAMOL 500MG        30",
+    "type": "order",
+    "degraded": false,
+    "n_items": 16
+  },
+  {
+    "file": "order_clean_008.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAMLODIPINE 5MG           30\nLEVOCETIRIZINE 5MG       90\nAUGMENTIN 625MG          60\nOMEPRAZOLE 20MG          240\nAMOXICILLIN 250MG        150\nTELMA 40MG               60\nROSEDAY 10MG             60\nTELMA 40MG               200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 8
+  },
+  {
+    "file": "order_clean_009.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nPANTOPRAZOLE 40MG        240\nAZITHROMYCIN 500MG       150\nSHELCAL 500MG            30\nAMOXICILLIN 250MG        60\nAMLODIPINE 5MG           240\nAMOXICILLIN 250MG        120\nAZITHROMYCIN 500MG       120\nDOLO 650MG               240\nDOLO 650MG               90\nAZITHROMYCIN 500MG       150\nGLIMEPIRIDE 2MG          30\nSHELCAL 500MG            60\nDOLO 650MG               150",
+    "type": "order",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "order_clean_010.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nDOLO 650MG               200\nAMLODIPINE 5MG           120\nSHELCAL 500MG            150\nLEVOCETIRIZINE 5MG       240\nCETIRIZINE 10MG          200\nAMLODIPINE 5MG           60\nPARACETAMOL 500MG        120\nPARACETAMOL 500MG        60\nSHELCAL 500MG            200\nPARACETAMOL 500MG        90\nPARACETAMOL 500MG        240\nAUGMENTIN 625MG          240\nDOLO 650MG               30\nCETIRIZINE 10MG          150\nAMLODIPINE 5MG           120\nLEVOCETIRIZINE 5MG       30\nMETFORMIN 500MG          200\nPANTOPRAZOLE 40MG        30\nAMOXICILLIN 250MG        60\nTELMA 40MG               200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 20
+  },
+  {
+    "file": "order_clean_011.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nGLIMEPIRIDE 2MG          200\nAZITHROMYCIN 500MG       150\nATORVASTATIN 10MG        150\nMETFORMIN 500MG          200\nAUGMENTIN 625MG          30\nAMOXICILLIN 250MG        120\nMETFORMIN 500MG          60\nDOLO 650MG               90\nROSEDAY 10MG             240\nAUGMENTIN 625MG          200\nROSEDAY 10MG             90\nGLIMEPIRIDE 2MG          90\nAMLODIPINE 5MG           30",
+    "type": "order",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "order_clean_012.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nMETFORMIN 500MG          240\nATORVASTATIN 10MG        60\nATORVASTATIN 10MG        60\nGLIMEPIRIDE 2MG          120\nROSEDAY 10MG             120\nATORVASTATIN 10MG        150\nSHELCAL 500MG            240\nCETIRIZINE 10MG          120\nDOLO 650MG               120\nPANTOPRAZOLE 40MG        240\nATORVASTATIN 10MG        30",
+    "type": "order",
+    "degraded": false,
+    "n_items": 11
+  },
+  {
+    "file": "order_clean_013.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nDOLO 650MG               240\nAMOXICILLIN 250MG        60\nROSEDAY 10MG             60\nAZITHROMYCIN 500MG       200\nAMLODIPINE 5MG           90\nAUGMENTIN 625MG          150\nAMOXICILLIN 250MG        200\nDOLO 650MG               90\nOMEPRAZOLE 20MG          30\nAUGMENTIN 625MG          240",
+    "type": "order",
+    "degraded": false,
+    "n_items": 10
+  },
+  {
+    "file": "order_clean_014.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAMLODIPINE 5MG           30\nGLIMEPIRIDE 2MG          30\nMETFORMIN 500MG          30\nPARACETAMOL 500MG        30\nAMLODIPINE 5MG           60\nCETIRIZINE 10MG          240\nAUGMENTIN 625MG          90\nAZITHROMYCIN 500MG       150\nPANTOPRAZOLE 40MG        240\nAZITHROMYCIN 500MG       30\nAZITHROMYCIN 500MG       60\nGLIMEPIRIDE 2MG          240\nMETFORMIN 500MG          30\nROSEDAY 10MG             30\nAMOXICILLIN 250MG        120",
+    "type": "order",
+    "degraded": false,
+    "n_items": 15
+  },
+  {
+    "file": "order_clean_015.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nOMEPRAZOLE 20MG          150\nTELMA 40MG               240\nAUGMENTIN 625MG          120\nPARACETAMOL 500MG        120\nTELMA 40MG               60\nSHELCAL 500MG            60\nOMEPRAZOLE 20MG          90\nPANTOPRAZOLE 40MG        120",
+    "type": "order",
+    "degraded": false,
+    "n_items": 8
+  },
+  {
+    "file": "order_clean_016.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAMOXICILLIN 250MG        150\nAMLODIPINE 5MG           200\nDOLO 650MG               120\nTELMA 40MG               150\nLEVOCETIRIZINE 5MG       30\nAZITHROMYCIN 500MG       90\nAUGMENTIN 625MG          60\nTELMA 40MG               60\nAMLODIPINE 5MG           200\nPARACETAMOL 500MG        120",
+    "type": "order",
+    "degraded": false,
+    "n_items": 10
+  },
+  {
+    "file": "order_clean_017.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nSHELCAL 500MG            120\nLEVOCETIRIZINE 5MG       90\nROSEDAY 10MG             120\nPANTOPRAZOLE 40MG        60\nPARACETAMOL 500MG        90\nAMLODIPINE 5MG           30\nPANTOPRAZOLE 40MG        30\nLEVOCETIRIZINE 5MG       150\nSHELCAL 500MG            240\nAMLODIPINE 5MG           60\nATORVASTATIN 10MG        60\nAMLODIPINE 5MG           90\nAMOXICILLIN 250MG        240\nAMLODIPINE 5MG           150\nAUGMENTIN 625MG          90\nOMEPRAZOLE 20MG          60\nAMLODIPINE 5MG           150\nROSEDAY 10MG             240\nSHELCAL 500MG            150\nPARACETAMOL 500MG        200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 20
+  },
+  {
+    "file": "order_clean_018.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nSHELCAL 500MG            150\nMETFORMIN 500MG          150\nCETIRIZINE 10MG          240\nLEVOCETIRIZINE 5MG       150\nDOLO 650MG               60\nLEVOCETIRIZINE 5MG       30\nAZITHROMYCIN 500MG       30\nAMLODIPINE 5MG           150\nAMLODIPINE 5MG           30\nLEVOCETIRIZINE 5MG       30\nROSEDAY 10MG             150\nCETIRIZINE 10MG          240\nMETFORMIN 500MG          90\nOMEPRAZOLE 20MG          240\nROSEDAY 10MG             30\nPARACETAMOL 500MG        60\nMETFORMIN 500MG          240\nATORVASTATIN 10MG        240\nSHELCAL 500MG            30",
+    "type": "order",
+    "degraded": false,
+    "n_items": 19
+  },
+  {
+    "file": "order_clean_019.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAUGMENTIN 625MG          150\nATORVASTATIN 10MG        90\nDOLO 650MG               90\nMETFORMIN 500MG          60\nTELMA 40MG               240\nLEVOCETIRIZINE 5MG       200\nROSEDAY 10MG             60\nSHELCAL 500MG            60\nOMEPRAZOLE 20MG          120\nDOLO 650MG               200\nDOLO 650MG               60\nOMEPRAZOLE 20MG          200\nPARACETAMOL 500MG        200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "order_clean_020.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAUGMENTIN 625MG          240\nAMOXICILLIN 250MG        60\nROSEDAY 10MG             240\nAMLODIPINE 5MG           200\nATORVASTATIN 10MG        120\nMETFORMIN 500MG          90\nAZITHROMYCIN 500MG       60\nSHELCAL 500MG            90\nOMEPRAZOLE 20MG          200\nAZITHROMYCIN 500MG       240\nROSEDAY 10MG             120\nPARACETAMOL 500MG        90\nCETIRIZINE 10MG          60\nAZITHROMYCIN 500MG       90\nPANTOPRAZOLE 40MG        240\nATORVASTATIN 10MG        200\nPARACETAMOL 500MG        30",
+    "type": "order",
+    "degraded": false,
+    "n_items": 17
+  },
+  {
+    "file": "order_clean_021.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nGLIMEPIRIDE 2MG          200\nTELMA 40MG               60\nTELMA 40MG               120\nAUGMENTIN 625MG          90\nAUGMENTIN 625MG          30\nLEVOCETIRIZINE 5MG       240\nAMLODIPINE 5MG           60\nGLIMEPIRIDE 2MG          30\nAMOXICILLIN 250MG        90\nPARACETAMOL 500MG        90\nPANTOPRAZOLE 40MG        30\nAZITHROMYCIN 500MG       90\nOMEPRAZOLE 20MG          120\nOMEPRAZOLE 20MG          200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 14
+  },
+  {
+    "file": "order_clean_022.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAZITHROMYCIN 500MG       90\nLEVOCETIRIZINE 5MG       200\nPARACETAMOL 500MG        120\nOMEPRAZOLE 20MG          150\nTELMA 40MG               60\nAMOXICILLIN 250MG        30\nROSEDAY 10MG             60\nCETIRIZINE 10MG          120\nPANTOPRAZOLE 40MG        200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 9
+  },
+  {
+    "file": "order_clean_023.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nDOLO 650MG               60\nATORVASTATIN 10MG        30\nAUGMENTIN 625MG          150\nLEVOCETIRIZINE 5MG       60\nAMOXICILLIN 250MG        90\nPARACETAMOL 500MG        120\nAZITHROMYCIN 500MG       90\nLEVOCETIRIZINE 5MG       60\nATORVASTATIN 10MG        30\nCETIRIZINE 10MG          60\nDOLO 650MG               30\nLEVOCETIRIZINE 5MG       240",
+    "type": "order",
+    "degraded": false,
+    "n_items": 12
+  },
+  {
+    "file": "order_clean_024.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nDOLO 650MG               240\nAUGMENTIN 625MG          120\nLEVOCETIRIZINE 5MG       200\nPANTOPRAZOLE 40MG        30\nAUGMENTIN 625MG          60\nSHELCAL 500MG            120\nSHELCAL 500MG            60\nGLIMEPIRIDE 2MG          30\nPANTOPRAZOLE 40MG        120",
+    "type": "order",
+    "degraded": false,
+    "n_items": 9
+  },
+  {
+    "file": "order_clean_025.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nPANTOPRAZOLE 40MG        60\nPANTOPRAZOLE 40MG        150\nAMOXICILLIN 250MG        60\nATORVASTATIN 10MG        30\nSHELCAL 500MG            240\nTELMA 40MG               240\nAMLODIPINE 5MG           150\nAMOXICILLIN 250MG        240\nAUGMENTIN 625MG          240\nTELMA 40MG               150\nLEVOCETIRIZINE 5MG       150\nAMLODIPINE 5MG           120\nDOLO 650MG               30\nAUGMENTIN 625MG          240\nAMOXICILLIN 250MG        150",
+    "type": "order",
+    "degraded": false,
+    "n_items": 15
+  },
+  {
+    "file": "order_clean_026.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nMETFORMIN 500MG          30\nGLIMEPIRIDE 2MG          60\nOMEPRAZOLE 20MG          60\nCETIRIZINE 10MG          60\nAMOXICILLIN 250MG        120\nAZITHROMYCIN 500MG       200\nTELMA 40MG               60\nMETFORMIN 500MG          240\nPANTOPRAZOLE 40MG        90\nAZITHROMYCIN 500MG       30\nAUGMENTIN 625MG          150\nAUGMENTIN 625MG          150\nROSEDAY 10MG             240\nPANTOPRAZOLE 40MG        150\nGLIMEPIRIDE 2MG          240\nPARACETAMOL 500MG        240\nTELMA 40MG               30",
+    "type": "order",
+    "degraded": false,
+    "n_items": 17
+  },
+  {
+    "file": "order_clean_027.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nMETFORMIN 500MG          60\nATORVASTATIN 10MG        30\nATORVASTATIN 10MG        240\nDOLO 650MG               240\nSHELCAL 500MG            120\nPANTOPRAZOLE 40MG        120\nLEVOCETIRIZINE 5MG       150\nLEVOCETIRIZINE 5MG       30\nOMEPRAZOLE 20MG          90\nAUGMENTIN 625MG          60\nAUGMENTIN 625MG          30\nAUGMENTIN 625MG          90\nAMLODIPINE 5MG           30\nLEVOCETIRIZINE 5MG       90",
+    "type": "order",
+    "degraded": false,
+    "n_items": 14
+  },
+  {
+    "file": "order_clean_028.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nPARACETAMOL 500MG        90\nDOLO 650MG               90\nPANTOPRAZOLE 40MG        240\nLEVOCETIRIZINE 5MG       240\nATORVASTATIN 10MG        240\nAMLODIPINE 5MG           60\nDOLO 650MG               200\nGLIMEPIRIDE 2MG          240\nROSEDAY 10MG             90\nTELMA 40MG               150\nAZITHROMYCIN 500MG       60\nGLIMEPIRIDE 2MG          60\nTELMA 40MG               200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 13
+  },
+  {
+    "file": "order_clean_029.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nSHELCAL 500MG            240\nAMOXICILLIN 250MG        150\nOMEPRAZOLE 20MG          30\nDOLO 650MG               200\nAUGMENTIN 625MG          60\nPARACETAMOL 500MG        60\nCETIRIZINE 10MG          240\nCETIRIZINE 10MG          240\nAMOXICILLIN 250MG        60\nAMOXICILLIN 250MG        120\nAMOXICILLIN 250MG        90\nCETIRIZINE 10MG          90\nSHELCAL 500MG            240\nGLIMEPIRIDE 2MG          150\nAUGMENTIN 625MG          200",
+    "type": "order",
+    "degraded": false,
+    "n_items": 15
+  },
+  {
+    "file": "bill_degraded_000.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-99282\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nPARACETAMOL 500MG     B4963     06/29   43    144.91  12%\nSHELCAL 500MG         B6640     03/28   49    45.31   5%\nAUGMENTIN 625MG       B1813     03/27   19    201.27  18%\nCETIRIZINE 10MG       B5408     11/29   37    25.61   18%\nPARACETAMOL 500MG     B8767     03/27   43    244.24  5%\nPANTOPRAZOLE 40MG     B6004     12/28   32    270.74  12%\nGLIMEPIRIDE 2MG       B5128     04/29   24    209.61  18%\nAUGMENTIN 625MG       B2676     01/28   40    201.26  18%\nDOLO 650MG            B5890     11/26   35    37.87   12%\n\nTotal Items: 9\nInvoice Total: Rs. 10327.73",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 9
+  },
+  {
+    "file": "bill_degraded_001.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-95998\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nDOLO 650MG            B4086     03/27   8     245.52  18%\nAUGMENTIN 625MG       B6236     11/27   6     203.51  12%\nPANTOPRAZOLE 40MG     B7857     07/29   7     183.25  18%\nCETIRIZINE 10MG       B6622     12/27   48    169.7   12%\nSHELCAL 500MG         B9311     05/27   47    265.42  5%\nDOLO 650MG            B2599     08/27   21    223.05  18%\nOMEPRAZOLE 20MG       B6499     11/26   19    119.48  18%\nDOLO 650MG            B7889     06/28   21    183.96  12%\nATORVASTATIN 10MG     B8709     01/26   35    269.04  18%\nATORVASTATIN 10MG     B7253     09/28   31    35.14   5%\nMETFORMIN 500MG       B4281     06/29   41    270.0   12%\nMETFORMIN 500MG       B6183     12/27   10    156.52  18%\n\nTotal Items: 12\nInvoice Total: Rs. 14826.32",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 12
+  },
+  {
+    "file": "bill_degraded_002.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-10617\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nGLIMEPIRIDE 2MG       B5481     04/27   41    234.06  12%\nAZITHROMYCIN 500MG    B3120     10/29   45    140.23  12%\nLEVOCETIRIZINE 5MG    B7280     01/26   39    75.84   12%\nPARACETAMOL 500MG     B6279     09/27   6     209.49  18%\nAMLODIPINE 5MG        B4707     12/28   24    56.1    12%\nDOLO 650MG            B3736     02/26   24    285.57  12%\nROSEDAY 10MG          B8105     11/27   26    298.92  12%\nSHELCAL 500MG         B4087     03/29   6     83.96   18%\n\nTotal Items: 8\nInvoice Total: Rs. 14803.43",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 8
+  },
+  {
+    "file": "bill_degraded_003.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-87292\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nOMEPRAZOLE 20MG       B3017     06/26   29    265.43  12%\nAMOXICILLIN 250MG     B1785     11/26   46    254.11  5%\nATORVASTATIN 10MG     B7828     08/29   12    173.24  12%\nMETFORMIN 500MG       B4366     12/26   24    137.84  5%\nPANTOPRAZOLE 40MG     B3247     07/26   37    221.25  5%\nDOLO 650MG            B2867     02/29   17    190.52  12%\nCETIRIZINE 10MG       B6864     12/29   23    64.9    18%\nLEVOCETIRIZINE 5MG    B4402     12/29   26    85.66   5%\n\nTotal Items: 8\nInvoice Total: Rs. 10731.23",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 8
+  },
+  {
+    "file": "bill_degraded_004.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-97690\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nLEVOCETIRIZINE 5MG    B3443     02/26   11    273.34  18%\nAMLODIPINE 5MG        B8483     05/28   34    34.02   5%\nAMOXICILLIN 250MG     B5760     06/28   32    226.79  5%\nAMOXICILLIN 250MG     B1158     03/27   26    120.11  12%\nPANTOPRAZOLE 40MG     B2522     06/28   16    51.87   12%\nGLIMEPIRIDE 2MG       B5453     07/29   31    201.68  5%\nATORVASTATIN 10MG     B3171     12/26   15    49.04   18%\nLEVOCETIRIZINE 5MG    B8178     03/29   27    191.18  18%\nMETFORMIN 500MG       B8914     08/26   31    143.39  5%\nPANTOPRAZOLE 40MG     B6148     01/27   47    264.48  18%\nATORVASTATIN 10MG     B8091     11/27   35    116.81  18%\nAUGMENTIN 625MG       B3435     09/26   5     200.15  5%\nLEVOCETIRIZINE 5MG    B9123     03/26   36    109.78  12%\nPANTOPRAZOLE 40MG     B1824     09/27   40    200.13  12%\nAMLODIPINE 5MG        B2291     08/29   41    145.47  12%\nGLIMEPIRIDE 2MG       B6178     02/29   46    24.98   12%\nTELMA 40MG            B1587     09/26   10    241.7   18%\n\nTotal Items: 17\nInvoice Total: Rs. 10288.0",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 17
+  },
+  {
+    "file": "bill_degraded_005.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-37112\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nGLIMEPIRIDE 2MG       B6584     06/26   19    256.41  12%\nLEVOCETIRIZINE 5MG    B6952     12/29   12    47.28   18%\nAMLODIPINE 5MG        B1035     06/28   45    290.04  12%\nSHELCAL 500MG         B2741     01/27   36    59.33   18%\nTELMA 40MG            B2752     05/27   17    53.81   12%\nCETIRIZINE 10MG       B8488     04/28   11    232.0   5%\nATORVASTATIN 10MG     B8381     08/27   36    21.21   18%\nAMOXICILLIN 250MG     B8091     10/29   37    238.7   5%\nOMEPRAZOLE 20MG       B3103     02/29   47    188.15  12%\nAUGMENTIN 625MG       B7859     10/27   22    131.4   12%\nDOLO 650MG            B8419     03/27   31    188.71  18%\nDOLO 650MG            B9975     06/27   17    78.72   18%\nDOLO 650MG            B6657     11/27   50    202.02  5%\nROSEDAY 10MG          B2890     06/29   42    179.78  18%\nTELMA 40MG            B9747     05/29   5     166.36  5%\nAUGMENTIN 625MG       B3381     01/26   17    94.75   5%\n\nTotal Items: 16\nInvoice Total: Rs. 14785.92",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 16
+  },
+  {
+    "file": "bill_degraded_006.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-18130\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nDOLO 650MG            B4342     09/26   27    247.93  5%\nAMLODIPINE 5MG        B7371     04/28   49    206.06  12%\nAUGMENTIN 625MG       B7825     11/28   40    35.06   18%\nPANTOPRAZOLE 40MG     B4327     10/29   19    275.22  18%\nSHELCAL 500MG         B9955     12/27   17    102.37  5%\nAZITHROMYCIN 500MG    B4063     03/26   29    31.38   12%\nPANTOPRAZOLE 40MG     B3131     03/28   5     112.56  18%\nMETFORMIN 500MG       B1654     03/28   43    34.24   18%\nDOLO 650MG            B9037     10/28   9     239.53  12%\nAMLODIPINE 5MG        B4012     09/26   37    64.62   18%\n\nTotal Items: 10\nInvoice Total: Rs. 8981.47",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 10
+  },
+  {
+    "file": "bill_degraded_007.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-37964\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nROSEDAY 10MG          B6424     06/28   18    286.09  18%\nLEVOCETIRIZINE 5MG    B1144     02/28   33    87.3    18%\nAMLODIPINE 5MG        B1653     11/28   29    276.46  5%\nAUGMENTIN 625MG       B5203     09/28   6     275.17  12%\nGLIMEPIRIDE 2MG       B8975     01/28   46    73.9    18%\nAZITHROMYCIN 500MG    B2572     03/26   45    38.33   18%\nCETIRIZINE 10MG       B7950     02/27   39    252.05  18%\nTELMA 40MG            B2181     12/27   6     148.58  12%\nAMOXICILLIN 250MG     B2433     02/26   16    242.38  18%\nAZITHROMYCIN 500MG    B4729     05/29   29    146.32  12%\nTELMA 40MG            B6183     01/29   48    53.13   5%\n\nTotal Items: 11\nInvoice Total: Rs. 10338.5",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 11
+  },
+  {
+    "file": "bill_degraded_008.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-86756\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nAMOXICILLIN 250MG     B2189     06/26   23    240.33  12%\nAZITHROMYCIN 500MG    B5612     08/29   30    250.19  5%\nLEVOCETIRIZINE 5MG    B3561     09/27   13    229.09  18%\nDOLO 650MG            B3360     05/28   5     174.99  18%\nMETFORMIN 500MG       B3019     01/26   41    187.06  18%\nAZITHROMYCIN 500MG    B5992     04/28   18    135.54  18%\nMETFORMIN 500MG       B3637     03/27   44    253.73  5%\nATORVASTATIN 10MG     B3971     11/26   40    149.15  18%\nAZITHROMYCIN 500MG    B5762     11/26   21    47.5    18%\nLEVOCETIRIZINE 5MG    B6420     06/27   47    203.53  5%\nDOLO 650MG            B2143     04/28   36    146.18  18%\nDOLO 650MG            B3496     10/28   25    288.42  5%\nPARACETAMOL 500MG     B6131     04/27   50    227.15  12%\nPANTOPRAZOLE 40MG     B6889     03/28   35    149.6   12%\nDOLO 650MG            B8978     09/26   16    200.75  5%\nPANTOPRAZOLE 40MG     B3293     09/27   21    225.39  18%\nAZITHROMYCIN 500MG    B2235     01/26   42    182.09  18%\nCETIRIZINE 10MG       B1600     09/28   39    270.32  18%\nLEVOCETIRIZINE 5MG    B3435     06/29   19    269.6   18%\nDOLO 650MG            B3193     08/26   30    121.88  5%\n\nTotal Items: 20\nInvoice Total: Rs. 10614.82",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 20
+  },
+  {
+    "file": "bill_degraded_009.png",
+    "ground_truth": "TAX INVOICE\nGSTIN: 29ABCDE1234F1Z5\nDistributor: ABC Pharma Distributors\nInvoice No: INV-90482\nDate: 15/07/2026\n\nMedicine              Batch     Exp     Qty   MRP     GST   \nOMEPRAZOLE 20MG       B9423     03/29   15    70.16   18%\nMETFORMIN 500MG       B8921     06/26   19    233.21  5%\nAZITHROMYCIN 500MG    B5331     06/27   7     207.2   18%\nSHELCAL 500MG         B7358     08/29   7     31.17   18%\nROSEDAY 10MG          B2691     12/28   21    182.02  18%\nOMEPRAZOLE 20MG       B7171     11/29   28    184.55  5%\nPANTOPRAZOLE 40MG     B7165     04/29   27    248.83  12%\nLEVOCETIRIZINE 5MG    B8898     10/26   37    266.97  12%\nOMEPRAZOLE 20MG       B4768     02/28   18    62.07   5%\nSHELCAL 500MG         B2938     11/27   31    247.13  18%\nATORVASTATIN 10MG     B8889     11/29   35    79.0    5%\nTELMA 40MG            B1367     04/26   13    180.58  5%\nMETFORMIN 500MG       B9399     01/27   8     66.58   5%\nAUGMENTIN 625MG       B1305     12/28   10    80.65   18%\nLEVOCETIRIZINE 5MG    B8891     03/27   31    188.23  18%\nOMEPRAZOLE 20MG       B9369     05/27   48    115.95  12%\nAZITHROMYCIN 500MG    B4765     07/29   13    50.4    5%\nTELMA 40MG            B3450     10/26   16    153.24  18%\nAMOXICILLIN 250MG     B9706     09/26   10    155.03  5%\nPARACETAMOL 500MG     B8069     09/29   28    264.95  18%\n\nTotal Items: 20\nInvoice Total: Rs. 8887.61",
+    "type": "bill",
+    "degraded": true,
+    "n_items": 20
+  },
+  {
+    "file": "order_degraded_000.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nLEVOCETIRIZINE 5MG       240\nAUGMENTIN 625MG          90\nATORVASTATIN 10MG        120\nMETFORMIN 500MG          90\nLEVOCETIRIZINE 5MG       240\nAMLODIPINE 5MG           240\nAZITHROMYCIN 500MG       90\nTELMA 40MG               90\nCETIRIZINE 10MG          30\nPARACETAMOL 500MG        150\nATORVASTATIN 10MG        150\nPARACETAMOL 500MG        120\nCETIRIZINE 10MG          200\nROSEDAY 10MG             120\nSHELCAL 500MG            30\nMETFORMIN 500MG          120\nPANTOPRAZOLE 40MG        90\nTELMA 40MG               150\nSHELCAL 500MG            150\nPANTOPRAZOLE 40MG        200",
+    "type": "order",
+    "degraded": true,
+    "n_items": 20
+  },
+  {
+    "file": "order_degraded_001.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nTELMA 40MG               150\nLEVOCETIRIZINE 5MG       60\nSHELCAL 500MG            150\nLEVOCETIRIZINE 5MG       90\nDOLO 650MG               150\nSHELCAL 500MG            240\nAUGMENTIN 625MG          200\nMETFORMIN 500MG          240\nATORVASTATIN 10MG        200\nAMLODIPINE 5MG           120\nOMEPRAZOLE 20MG          30",
+    "type": "order",
+    "degraded": true,
+    "n_items": 11
+  },
+  {
+    "file": "order_degraded_002.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nROSEDAY 10MG             240\nAMOXICILLIN 250MG        60\nAUGMENTIN 625MG          200\nPARACETAMOL 500MG        240\nAZITHROMYCIN 500MG       240\nMETFORMIN 500MG          120\nTELMA 40MG               30\nAZITHROMYCIN 500MG       90\nAMLODIPINE 5MG           90\nAZITHROMYCIN 500MG       150\nAMOXICILLIN 250MG        200\nAUGMENTIN 625MG          120\nDOLO 650MG               200\nAMOXICILLIN 250MG        240",
+    "type": "order",
+    "degraded": true,
+    "n_items": 14
+  },
+  {
+    "file": "order_degraded_003.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nLEVOCETIRIZINE 5MG       120\nPARACETAMOL 500MG        60\nDOLO 650MG               60\nAMOXICILLIN 250MG        240\nAMLODIPINE 5MG           150\nOMEPRAZOLE 20MG          200\nAMOXICILLIN 250MG        90\nAMLODIPINE 5MG           200\nPARACETAMOL 500MG        60\nAZITHROMYCIN 500MG       90\nAUGMENTIN 625MG          90\nAUGMENTIN 625MG          120\nCETIRIZINE 10MG          150\nPARACETAMOL 500MG        200\nAZITHROMYCIN 500MG       30\nDOLO 650MG               200\nSHELCAL 500MG            90\nPANTOPRAZOLE 40MG        60",
+    "type": "order",
+    "degraded": true,
+    "n_items": 18
+  },
+  {
+    "file": "order_degraded_004.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nGLIMEPIRIDE 2MG          120\nPARACETAMOL 500MG        90\nOMEPRAZOLE 20MG          120\nATORVASTATIN 10MG        150\nAZITHROMYCIN 500MG       150\nDOLO 650MG               90\nATORVASTATIN 10MG        240\nPANTOPRAZOLE 40MG        150\nPANTOPRAZOLE 40MG        200\nGLIMEPIRIDE 2MG          120\nLEVOCETIRIZINE 5MG       240",
+    "type": "order",
+    "degraded": true,
+    "n_items": 11
+  },
+  {
+    "file": "order_degraded_005.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nGLIMEPIRIDE 2MG          200\nGLIMEPIRIDE 2MG          150\nPARACETAMOL 500MG        120\nATORVASTATIN 10MG        90\nAZITHROMYCIN 500MG       120\nAMLODIPINE 5MG           200\nAMLODIPINE 5MG           240\nROSEDAY 10MG             120\nSHELCAL 500MG            150\nPARACETAMOL 500MG        200\nPANTOPRAZOLE 40MG        60\nDOLO 650MG               30\nAUGMENTIN 625MG          200",
+    "type": "order",
+    "degraded": true,
+    "n_items": 13
+  },
+  {
+    "file": "order_degraded_006.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAZITHROMYCIN 500MG       150\nOMEPRAZOLE 20MG          120\nROSEDAY 10MG             90\nCETIRIZINE 10MG          150\nPANTOPRAZOLE 40MG        60\nCETIRIZINE 10MG          120\nCETIRIZINE 10MG          60\nAMLODIPINE 5MG           240\nPANTOPRAZOLE 40MG        60\nAMLODIPINE 5MG           60\nAMLODIPINE 5MG           240\nSHELCAL 500MG            60\nATORVASTATIN 10MG        30",
+    "type": "order",
+    "degraded": true,
+    "n_items": 13
+  },
+  {
+    "file": "order_degraded_007.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nLEVOCETIRIZINE 5MG       150\nPARACETAMOL 500MG        240\nAMOXICILLIN 250MG        240\nLEVOCETIRIZINE 5MG       90\nROSEDAY 10MG             120\nPANTOPRAZOLE 40MG        120\nOMEPRAZOLE 20MG          240\nPANTOPRAZOLE 40MG        120\nAMLODIPINE 5MG           240\nMETFORMIN 500MG          30\nTELMA 40MG               120\nAMOXICILLIN 250MG        150\nSHELCAL 500MG            120\nOMEPRAZOLE 20MG          120\nATORVASTATIN 10MG        200\nGLIMEPIRIDE 2MG          90\nPARACETAMOL 500MG        30\nCETIRIZINE 10MG          120",
+    "type": "order",
+    "degraded": true,
+    "n_items": 18
+  },
+  {
+    "file": "order_degraded_008.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nSHELCAL 500MG            150\nPANTOPRAZOLE 40MG        60\nPANTOPRAZOLE 40MG        60\nPANTOPRAZOLE 40MG        120\nROSEDAY 10MG             90\nOMEPRAZOLE 20MG          120\nTELMA 40MG               60\nTELMA 40MG               200\nSHELCAL 500MG            90\nAUGMENTIN 625MG          90\nGLIMEPIRIDE 2MG          60\nMETFORMIN 500MG          150\nAMLODIPINE 5MG           240",
+    "type": "order",
+    "degraded": true,
+    "n_items": 13
+  },
+  {
+    "file": "order_degraded_009.png",
+    "ground_truth": "DISPENSARY: Kastoori PHC\nORDER SHEET\nOrder Date: 15/07/2026\n\nMedicine                 Required Qty\nAMLODIPINE 5MG           150\nTELMA 40MG               240\nAUGMENTIN 625MG          60\nMETFORMIN 500MG          240\nMETFORMIN 500MG          120\nPARACETAMOL 500MG        60\nTELMA 40MG               120\nMETFORMIN 500MG          240\nROSEDAY 10MG             240\nLEVOCETIRIZINE 5MG       90\nPANTOPRAZOLE 40MG        150\nAMOXICILLIN 250MG        120",
+    "type": "order",
+    "degraded": true,
+    "n_items": 12
+  }
+]

@@ -1,0 +1,218 @@
+--- /tmp/orig_app.js	2026-07-18 10:07:31.195523544 +0000
++++ app.js	2026-07-18 10:06:36.379523019 +0000
+@@ -4491,21 +4491,60 @@
+             let tablets = this.getTablets();
+             const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+ 
+-            // Duplicate name check before save
+-            const _cleanName = name.toUpperCase();
+-            const _dupCheck = originalCode
+-                ? tablets.some(t => t.name.toUpperCase() === _cleanName && t.code !== originalCode)
+-                : tablets.some(t => t.name.toUpperCase() === _cleanName);
+-            if (_dupCheck) {
++            // Duplicate check before save -- reuses the same Medicine Identity
++            // Engine cascade (resolveMedicine: Product Code -> Brand+Strength
++            // +Form -> Generic -> Fuzzy >95%) that Bill/Order Processing OCR
++            // already relies on, instead of a raw exact-string name compare.
++            // This is the single duplicate-prevention algorithm for the whole
++            // app -- manual entry (this form) now follows the identical rules
++            // as OCR, so "ROSEDAY 10" / "Roseday-10" / "ROSEDAY 10 MG" /
++            // "USV L. ROSEDAY 10MG" are recognized as the same medicine here
++            // too, while different strengths (5/10/20/40 MG) never merge.
++            //
++            // NOTE: resolveMedicine()'s Brand/Strength/Generic cascade reads
++            // Master Data via getIndexes() (live storage), not the `tablets`
++            // array passed in here -- only its fuzzy-candidate fallback
++            // actually honors a filtered subset. So when editing an existing
++            // record (originalCode set), we can't rely on filtering the input
++            // array to exclude "itself" -- we explicitly exclude a self-code
++            // match after resolution instead, below.
++            const _resolution = this.resolveMedicine(name, pack, tablets);
++            const _resolvedIsSelf = originalCode && _resolution.tablet && _resolution.tablet.code === originalCode;
++
++            if (_resolution.status === "exact" && _resolution.tablet && !_resolvedIsSelf) {
++                const existing = _resolution.tablet;
+                 this.triggerNotification(
+                     "Inventory", "Duplicate medicine detected",
+-                    "Duplicate Medicine Name\nName: " + name + "\nAlready exists in Master Data. Please use a unique name.",
++                    "Duplicate Medicine Name\nName: " + name + "\nMatches existing Master Data record: " + existing.name + " (" + existing.code + ")",
+                     "Warning", { medicineName: name }
+                 );
+-                this.showToast(`Medicine Name "${name}" already exists in Master Data!`, "error");
++                const useExisting = confirm(
++                    `A matching medicine already exists in Master Data:\n\n${existing.name} (${existing.code})\n\n` +
++                    `Click OK to open that record for editing instead of creating a duplicate, or Cancel to go back and change the details.`
++                );
++                if (useExisting) {
++                    this.closeTabletModal();
++                    this.openEditTabletModal(existing.code);
++                } else {
++                    this.showToast(`Medicine "${name}" already exists in Master Data as ${existing.name} (${existing.code}).`, "error");
++                }
+                 return;
+             }
+ 
++            const _dupCandidates = (_resolution.candidates || []).filter(c => c.code !== originalCode);
++            if (!originalCode && _dupCandidates.length > 0) {
++                // No exact match, but the cascade found similar medicine(s)
++                // (e.g. same brand at a different strength, or a fuzzy match
++                // at/below the 95% auto-accept threshold) -- never silently
++                // create a new record; require explicit confirmation first.
++                const candidateList = _dupCandidates.slice(0, 5).map(c => `• ${c.name} (${c.code})`).join("\n");
++                const proceed = confirm(
++                    `No exact match found, but similar medicine(s) already exist in Master Data:\n\n${candidateList}\n\n` +
++                    `Click OK to create "${name}" as a new medicine anyway, or Cancel to review the details first.`
++                );
++                if (!proceed) return;
++            }
++
+             if (originalCode) {
+                 // EDIT MODE
+                 const index = tablets.findIndex(t => t.code === originalCode);
+@@ -8518,91 +8557,67 @@
+             // High-value medicine alert for Inventory Adjustment
+             this.checkHighValueMedicineAlert(tabletName, qty + " packs", "Inventory");
+ 
+-            try {
+-                // Begin atomic transaction and check database lock
+-                this.beginTransaction();
++            // Resolve the typed name BEFORE touching the database / starting a
++            // transaction, using the same Medicine Identity Engine cascade
++            // (resolveMedicine: Product Code -> Brand+Strength+Form -> Generic
++            // -> Fuzzy >95%) that Bill/Order Processing already relies on.
++            // This closes the gap where manual Stock In used to silently
++            // auto-create a permanent Master Data record from an exact-string
++            // mismatch (e.g. "Roseday-10" vs "ROSEDAY 10") with no review.
++            let tablets = this.getTablets();
++            let matched = tablets.find(t => t.name.toLowerCase() === tabletName.toLowerCase() || t.code.toLowerCase() === tabletName.toLowerCase());
+ 
+-                let tablets = this.getTablets();
+-                let matched = tablets.find(t => t.name.toLowerCase() === tabletName.toLowerCase() || t.code.toLowerCase() === tabletName.toLowerCase());
+-                
+-                const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
++            if (!matched) {
++                const resolution = this.resolveMedicine(tabletName, null, tablets);
++                if (resolution.status === "exact" && resolution.tablet) {
++                    matched = tablets.find(t => t.code === resolution.tablet.code) || resolution.tablet;
++                } else if (adjustType === "OUT") {
++                    this.showToast(`Cannot perform Stock Out: Product "${tabletName.toUpperCase()}" not found in inventory.`, "error");
++                    return;
++                } else {
++                    // No confident match -- never auto-create. Ask first, and
++                    // route any confirmed creation through the normal Add
++                    // Medicine workflow (openAddTabletModal / saveTabletForm),
++                    // so it goes through the same duplicate-prevention check
++                    // rather than bypassing it here.
++                    const candidates = (resolution.candidates || []).slice(0, 5);
++                    const candidateList = candidates.map(c => `• ${c.name} (${c.code})`).join("\n");
++                    const msg = candidates.length > 0
++                        ? `"${tabletName}" doesn't exactly match Master Data, but similar medicine(s) already exist:\n\n${candidateList}\n\nCreate "${tabletName}" as a brand-new medicine anyway?`
++                        : `"${tabletName}" was not found in Master Data.\n\nCreate it as a brand-new medicine?`;
+ 
+-                if (!matched) {
+-                    if (adjustType === "OUT") {
+-                        throw new Error(`Cannot perform Stock Out: Product "${tabletName.toUpperCase()}" not found in inventory.`);
++                    if (!confirm(msg)) {
++                        this.showToast("Stock adjustment cancelled. Adjust the name or use Add New Medicine to create this product deliberately.", "info");
++                        return;
+                     }
+-                    
+-                    // Intercept stock and allocate to dues
+-                    const remainingQty = this.allocateIncomingStock(tabletName, qty);
+-
+-                    // Automatically create new product if it doesn't exist (like Bill Processing)
+-                    const code = this.generateProductCode(tabletName);
+ 
+-                    // Duplicate Protection: a different-looking name can still
+-                    // resolve to a Product Code that already exists (same
+-                    // Brand + Strength + Form + Pack) -- always check first,
+-                    // reuse the existing record rather than creating a
+-                    // second Master Data entry with the same code.
+-                    const existingByCode = tablets.find(t => t.code === code);
+-                    if (existingByCode) {
+-                        matched = existingByCode;
+-                        matched.batches = matched.batches || [];
+-                        matched.batches.push({
+-                            batchNumber: batch,
+-                            expiryDate: "12/28",
+-                            quantity: remainingQty,
+-                            mrp: 0,
+-                            cost: 0
+-                        });
+-                        matched.stock = (matched.stock || 0) + remainingQty;
+-                        this.setTablets(tablets);
+-
+-                        this.logHistory(
+-                            "Inventory Updated",
+-                            matched.name,
+-                            batch,
+-                            qty,
+-                            `Stock-in via Adjustment matched existing Product Code ${code} (Manual: ${reason}, Allocated ${qty - remainingQty} to dues)`
+-                        );
+-
+-                        this.showToast(`Matched existing product "${matched.name}" (${code}) and added stock (Allocated ${qty - remainingQty} to dues).`, "success");
+-                    } else {
+-                        matched = {
+-                            code: code,
+-                            name: tabletName.toUpperCase(),
+-                            brand: this.getBrandFromName(tabletName) || "Generic",
+-                            drugName: "",
+-                            pack: "10's",
+-                            category: this.detectCategoryFromName(tabletName, "10's"),
+-                            stock: remainingQty,
+-                            reorder: 25,
+-                            cost: 0,
+-                            mrp: 0,
+-                            gst: "5%",
+-                            isNew: true,
+-                            importedOn: nowStr,
+-                            batches: [{
+-                                batchNumber: batch,
+-                                expiryDate: "12/28",
+-                                quantity: remainingQty,
+-                                mrp: 0,
+-                                cost: 0
+-                            }]
+-                        };
+-                        tablets.push(matched);
+-                        this.setTablets(tablets);
++                    // Hand off to the normal Add Medicine workflow, prefilled
++                    // with what was typed here. Stock In can be completed
++                    // afterwards from the Add Tablet form (or by re-running
++                    // this adjustment) once the medicine has been reviewed
++                    // and saved -- it is never created inline from this modal.
++                    this.openAddTabletModal();
++                    this.prefillAddTabletFromOCRName(tabletName);
++                    const stockEl = document.getElementById("tab-stock");
++                    if (stockEl) stockEl.value = qty;
++                    const batchEl = document.getElementById("tab-batch");
++                    if (batchEl) batchEl.value = batch;
++                    this.showToast("Review the medicine details and click Save Tablet to create it and record this stock.", "info");
++                    return;
++                }
++            }
+ 
+-                        this.logHistory(
+-                            "Inventory Updated",
+-                            matched.name,
+-                            batch,
+-                            qty,
+-                            `Created new product and stocked-in (Manual: ${reason}, Allocated ${qty - remainingQty} to dues)`
+-                        );
++            const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+ 
+-                        this.showToast(`Created new product "${tabletName.toUpperCase()}" and added initial stock (Allocated ${qty - remainingQty} to dues).`, "success");
+-                    }
+-                } else {
++            try {
++                // Begin atomic transaction and check database lock
++                this.beginTransaction();
++                tablets = this.getTablets();
++                matched = tablets.find(t => t.code === matched.code);
++                if (!matched) {
++                    throw new Error("Matched product no longer exists in Master Data (may have been deleted). Please re-select.");
++                }
++                {
+                     // Apply adjustment to existing product
+                     matched.batches = matched.batches || [];
+                     

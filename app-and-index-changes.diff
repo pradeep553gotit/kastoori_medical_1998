@@ -1,0 +1,86 @@
+diff --git a/app.js b/app.js
+index d11536c..ef3c42d 100644
+--- a/app.js
++++ b/app.js
+@@ -12745,6 +12745,30 @@ ${rawText}`;
+             return providers;
+         }
+ 
++        // Stage 1/2 -- Shadow Mode entry point (approved migration plan).
++        // Deliberately NOT awaited by any caller: this kicks off an
++        // independent PaddleOCR call + comparison AFTER the real
++        // production result already exists, purely for evaluation
++        // logging. It can throw, hang, or the service can be completely
++        // down with zero effect on the scan the user just ran -- the
++        // real result was already returned to the caller before this
++        // fires. Disabled by default (see ocr/shadow-mode.js config);
++        // this method is a no-op unless explicitly enabled.
++        _maybeRunShadowOCR(base64Data, mimeType, prompt, type, fallbackSupplier, primaryResult, preprocessingMs) {
++            try {
++                if (window.OCRShadowMode) {
++                    // Intentionally not awaited -- fire-and-forget.
++                    window.OCRShadowMode.run(this, {
++                        base64Data, mimeType, prompt, type, fallbackSupplier,
++                        primaryResult, preprocessingMs
++                    });
++                }
++            } catch (e) {
++                // Must never break the real scan flow.
++                console.warn("[OCR] Shadow mode dispatch failed (non-fatal):", e);
++            }
++        }
++
+         // Phase 3.1 entry point: run the new preprocessing module ahead of
+         // the existing resize step. Never called by the existing scan
+         // flows today (see note above) -- available for new batch/local
+@@ -12844,6 +12868,7 @@ ${rawText}`;
+                         ocrMs: localResult.metadata.ocrMs, retryCount: 0, confidence: localResult.confidence,
+                         type, preprocessingMs
+                     });
++                    this._maybeRunShadowOCR(base64Data, mimeType, prompt, type, fallbackSupplier, localResult, preprocessingMs);
+                     return localResult;
+                 }
+ 
+@@ -12861,7 +12886,9 @@ ${rawText}`;
+                         retryCount: (verified.metadata && verified.metadata.retryLog) ? verified.metadata.retryLog.length : 0,
+                         confidence: verified.confidence, type, preprocessingMs
+                     });
+-                    return Object.assign({}, verified, { metadata: Object.assign({}, verified.metadata, { usedSecondaryVerification: true }) });
++                    const verifiedResult = Object.assign({}, verified, { metadata: Object.assign({}, verified.metadata, { usedSecondaryVerification: true }) });
++                    this._maybeRunShadowOCR(base64Data, mimeType, prompt, type, fallbackSupplier, verifiedResult, preprocessingMs);
++                    return verifiedResult;
+                 } catch (err) {
+                     console.warn("[OCR] Optional Gemini verification failed -- keeping local Tesseract result:", err);
+                     this._recordOCRTelemetry({
+@@ -12869,6 +12896,7 @@ ${rawText}`;
+                         ocrMs: localResult.metadata.ocrMs, retryCount: 0, confidence: localResult.confidence,
+                         type, preprocessingMs
+                     });
++                    this._maybeRunShadowOCR(base64Data, mimeType, prompt, type, fallbackSupplier, localResult, preprocessingMs);
+                     return localResult;
+                 }
+             }
+@@ -12885,6 +12913,7 @@ ${rawText}`;
+                     retryCount: (result.metadata && result.metadata.retryLog) ? result.metadata.retryLog.length : 0,
+                     confidence: result.confidence, type, preprocessingMs
+                 });
++                this._maybeRunShadowOCR(base64Data, mimeType, prompt, type, fallbackSupplier, result, preprocessingMs);
+                 return result;
+             }
+ 
+diff --git a/index.html b/index.html
+index 73ae32a..81d0a1f 100644
+--- a/index.html
++++ b/index.html
+@@ -2719,6 +2719,11 @@ USV L. TAZLOC 40MG 250 packs" style="width: 100%; font-family: monospace; font-s
+     <script src="ocr/providers/tesseract-provider.js"></script>
+     <script src="ocr/queue.js"></script>
+     <script src="ocr/shared-parser.js"></script>
++    <!-- Stage 1/2 (shadow-mode evaluation only -- see approved migration plan).
++         PaddleOCR is NEVER part of the primary/fallback chain; disabled by
++         default (ti_ocr_shadow_enabled must be explicitly set to "true"). -->
++    <script src="ocr/providers/paddleocr-provider.js"></script>
++    <script src="ocr/shadow-mode.js"></script>
+     <script src="app.js"></script>
+ </body>
+ </html>

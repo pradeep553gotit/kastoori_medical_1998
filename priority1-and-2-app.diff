@@ -1,0 +1,525 @@
+--- p311/app.js	2026-07-23 10:20:45.000000000 +0000
++++ repo/app.js	2026-07-23 10:51:22.007990036 +0000
+@@ -2628,6 +2628,30 @@
+                 });
+             }
+ 
++            // Priority 2 -- Batch OCR queue wiring. Separate file input from
++            // bill-file-input above (which merges multi-file selections as
++            // PAGES of one bill) -- this one runs each selected file through
++            // the existing OCRQueue-backed scanImagesBatch as an INDEPENDENT
++            // bill, in parallel, then lets the user step through review/
++            // import for each one using the same unmodified UI.
++            const billBatchFileInput = document.getElementById("bill-batch-file-input");
++            const btnBrowseBatchBills = document.getElementById("btn-browse-batch-bills");
++            if (btnBrowseBatchBills && billBatchFileInput) {
++                btnBrowseBatchBills.addEventListener("click", () => billBatchFileInput.click());
++            }
++            if (billBatchFileInput) {
++                billBatchFileInput.addEventListener("change", (e) => {
++                    if (e.target.files && e.target.files.length > 0) {
++                        this.startBatchBillScan(Array.from(e.target.files));
++                        billBatchFileInput.value = ""; // allow re-selecting the same files later
++                    }
++                });
++            }
++            const btnBatchNext = document.getElementById("btn-batch-next");
++            if (btnBatchNext) {
++                btnBatchNext.addEventListener("click", () => this.loadNextBatchBillResult());
++            }
++
+             // Load Kastoori Medicals sample bill
+             const btnLoadKastoori = document.getElementById("btn-load-kastoori");
+             if (btnLoadKastoori) {
+@@ -3607,8 +3631,11 @@
+                 tbody.innerHTML = "";
+                 o.medicines.forEach(med => {
+                     const tr = document.createElement("tr");
++                    // med.name can be raw OCR text (unmatched "new medicine" items
++                    // keep the scanned name verbatim -- see verifyStockItems /
++                    // item.isNewMedicine). Escape before innerHTML.
+                     tr.innerHTML = `
+-                        <td><strong>${med.name}</strong></td>
++                        <td><strong>${this.escapeHtml(med.name)}</strong></td>
+                         <td>${med.reqQty} packs</td>
+                         <td>${med.availQty} packs</td>
+                         <td>${med.dueQty} packs</td>
+@@ -4152,7 +4179,7 @@
+                 const tr = document.createElement("tr");
+                 tr.innerHTML = `
+                     <td><span class="status-badge ${prioColors[ro.priority] || 'badge-info'}">${ro.priority || "Normal"}</span></td>
+-                    <td><strong>${this.getCleanTabletName(ro.tabletName)}</strong>${ro.isNewMedicine ? '<div><span class="status-badge badge-info" style="font-size:0.65rem;padding:1px 5px;margin-top:3px;display:inline-block;">New Medicine</span></div>' : ''}</td>
++                    <td><strong>${this.escapeHtml(this.getCleanTabletName(ro.tabletName))}</strong>${ro.isNewMedicine ? '<div><span class="status-badge badge-info" style="font-size:0.65rem;padding:1px 5px;margin-top:3px;display:inline-block;">New Medicine</span></div>' : ''}</td>
+                     <td>${ro.genericName || "N/A"}</td>
+                     <td>${ro.strength || "—"}</td>
+                     <td><strong>${ro.dispensaryId || "N/A"}</strong><div style="font-size:0.72em;color:var(--text-muted)">${ro.dispensaryName || ""}</div></td>
+@@ -4434,7 +4461,7 @@
+                     tr.innerHTML = `
+                         <td><strong>${due.dispensaryId || due.orderId || "N/A"}</strong></td>
+                         <td>${due.date}</td>
+-                        <td>${due.tabletName}</td>
++                        <td>${this.escapeHtml(due.tabletName)}</td>
+                         <td>${due.reqQty}</td>
+                         <td>${currentStock}</td>
+                         <td><span class="badge badge-error active font-weight-700">${due.dueQty}</span></td>
+@@ -7236,13 +7263,16 @@
+             // Sort latest imported first
+             [...bills].reverse().forEach(bill => {
+                 const tr = document.createElement("tr");
++                // bill.invoiceNo / bill.supplier can be raw OCR text
++                // (validatedData.invoice_number / supplier_name from Gemini) --
++                // escape before innerHTML.
+                 tr.innerHTML = `
+-                    <td><strong>${bill.invoiceNo}</strong></td>
+-                    <td>${bill.supplier}</td>
++                    <td><strong>${this.escapeHtml(bill.invoiceNo)}</strong></td>
++                    <td>${this.escapeHtml(bill.supplier)}</td>
+                     <td>${bill.date}</td>
+                     <td>${bill.itemsCount} items</td>
+                     <td>₹${bill.totalCost.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
+-                    <td>${bill.remarks || "-"}</td>
++                    <td>${this.escapeHtml(bill.remarks || "-")}</td>
+                     <td><span class="status-badge badge-success">${bill.status}</span></td>
+                     <td>${bill.importedOn}</td>
+                 `;
+@@ -8140,15 +8170,23 @@
+                 row.style.borderLeft = "3px solid #f59e0b";
+                 row.title = `Manual Review needed: ${parseIssue}`;
+             }
++            // nameValue is OCR-derived (order-sheet scan) and parseIssue can
++            // echo OCR-derived text too. Interpolating either into innerHTML/
++            // an HTML attribute would let a crafted document break out and
++            // inject markup/script (see POST_IMPLEMENTATION_AUDIT.md,
++            // "Pre-existing HTML injection surface" -- this is the "sibling
++            // row builder" referenced there, alongside addBillManualRow).
++            // Fixed the same way: build with empty value/placeholder-only
++            // markup, then assign via safe DOM properties (.value/.textContent)
++            // after insertion.
+             row.innerHTML = `
+                 <div style="flex: 1; min-width: 220px; position: relative;">
+-                    ${parseIssue ? `<div style="font-size:0.68rem; color:#f59e0b; margin-bottom:2px;">⚠ Manual Review: ${parseIssue}</div>` : ""}
++                    <div class="builder-parse-issue" style="font-size:0.68rem; color:#f59e0b; margin-bottom:2px; display:${parseIssue ? "block" : "none"};">⚠ Manual Review: <span class="builder-parse-issue-text"></span></div>
+                     <input
+                         type="text"
+                         class="builder-select-tab"
+                         list="manual-bill-tablets-list"
+                         placeholder="Type any product name (e.g. OPTIMOIST GEL)..."
+-                        value="${nameValue}"
+                         required
+                         autocomplete="off"
+                         style="width:100%; padding: 10px 14px; border-radius: 8px; border: 1px solid ${parseIssue ? '#f59e0b' : 'var(--border-color)'}; background: rgba(255,255,255,0.06); color: var(--text-primary); font-size: 0.88rem;"
+@@ -8159,14 +8197,22 @@
+                     class="builder-qty-tab"
+                     min="1"
+                     placeholder="Qty"
+-                    value="${qtyValue}"
+                     required
+                     style="width: 90px; padding: 10px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.06); color: var(--text-primary); font-size: 0.88rem;"
+                 >
+-                <button type="button" class="btn btn-icon-only danger" onclick="document.getElementById('${rowId}').remove()" title="Remove row">
++                <button type="button" class="btn btn-icon-only danger" title="Remove row">
+                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                 </button>
+             `;
++            row.querySelector(".builder-select-tab").value = nameValue;
++            row.querySelector(".builder-qty-tab").value = qtyValue;
++            if (parseIssue) {
++                row.querySelector(".builder-parse-issue-text").textContent = parseIssue;
++            }
++            row.querySelector(".btn-icon-only.danger").addEventListener("click", () => {
++                const el = document.getElementById(rowId);
++                if (el) el.remove();
++            });
+             container.appendChild(row);
+             // Focus the input field if this is a user-triggered add
+             if (!nameValue) {
+@@ -8603,6 +8649,11 @@
+                     notAvailable: !!raw.notAvailable
+                 });
+ 
++                // displayName falls back to raw.ocrName (unmatched OCR text) when
++                // there's no Master Data match -- escape once, reuse everywhere
++                // below, since this is written into innerHTML in all three
++                // status branches (Available/Partial/New-or-OutOfStock).
++                const safeDisplayName = this.escapeHtml(displayName);
+                 const matchCellHtml = `
+                     <select onchange="window.app.changeVerificationMatch(${idx}, this.value)" style="margin-top:4px;font-size:0.72rem;padding:3px 5px;border-radius:6px;background:rgba(0,0,0,0.4);border:1px solid var(--border-color);color:#fff;max-width:180px;display:block;">
+                         <option value="">-- Unmatched --</option>
+@@ -8615,7 +8666,7 @@
+                     availCount++;
+                     const tr = document.createElement("tr");
+                     tr.innerHTML = `
+-                        <td><strong>${displayName}</strong>${matchCellHtml}</td>
++                        <td><strong>${safeDisplayName}</strong>${matchCellHtml}</td>
+                         <td>${qtyCellHtml}</td>
+                         <td><span class="text-success font-weight-700">${this.fmtStock(dbStock, tps, category)}</span></td>
+                         <td>${this.fmtStock(reservedQty, tps, category)}</td>
+@@ -8640,7 +8691,7 @@
+                             </div>`;
+                     }
+                     tr.innerHTML = `
+-                        <td><strong>${displayName}</strong>${matchCellHtml}</td>
++                        <td><strong>${safeDisplayName}</strong>${matchCellHtml}</td>
+                         <td>${qtyCellHtml}</td>
+                         <td>${this.fmtStock(dbStock, tps, category)}</td>
+                         <td>${this.fmtStock(dueQty, tps, category)}</td>
+@@ -8658,7 +8709,7 @@
+                     const tr = document.createElement("tr");
+                     const isNewMed = status === "New Medicine";
+                     tr.innerHTML = `
+-                        <td><strong>${displayName}</strong>${matchCellHtml}</td>
++                        <td><strong>${safeDisplayName}</strong>${matchCellHtml}</td>
+                         <td>${qtyCellHtml}</td>
+                         <td>${dbMatch ? this.fmtStock(dbStock, tps, category) : `<span class="text-danger">Not in Master Data</span>`}</td>
+                         <td>
+@@ -10808,13 +10859,20 @@
+             // matching must never generate "Review Required" notifications).
+             // A Pack Size / Strength / Brand mismatch uses the same popup with
+             // a tailored message instead of a separate dialog.
++            // currentMatch.name (and other OCR-derived fields interpolated below)
++            // originate from Gemini/local OCR extraction, not from a trusted
++            // internal source -- escape before writing into innerHTML so a
++            // maliciously-crafted scanned document can't inject markup/script
++            // into the pharmacy staff's session (see POST_IMPLEMENTATION_AUDIT.md,
++            // "Pre-existing HTML injection surface").
++            const safeMatchName = this.escapeHtml(currentMatch.name);
+             if (currentMatch.type === "bill-mismatch") {
+-                const reasonsHtml = (currentMatch.mismatchReasons || []).map(r => `• ${r}`).join("<br>");
+-                document.getElementById("ocr-match-message").innerHTML = `<strong style="color:#f59e0b;">Confirm before continuing</strong> — the supplier bill entry for <strong style="color:#00f2fe;">"${currentMatch.name}"</strong> doesn't fully match its Master Data record:<br>${reasonsHtml}<br><br>Confirm this is still the correct medicine, or edit the OCR text / cancel below.`;
++                const reasonsHtml = (currentMatch.mismatchReasons || []).map(r => `• ${this.escapeHtml(r)}`).join("<br>");
++                document.getElementById("ocr-match-message").innerHTML = `<strong style="color:#f59e0b;">Confirm before continuing</strong> — the supplier bill entry for <strong style="color:#00f2fe;">"${safeMatchName}"</strong> doesn't fully match its Master Data record:<br>${reasonsHtml}<br><br>Confirm this is still the correct medicine, or edit the OCR text / cancel below.`;
+             } else if (currentMatch.type === "bill-pack-confirm" || currentMatch.type === "order-pack-confirm") {
+-                document.getElementById("ocr-match-message").innerHTML = `<strong style="color:#f59e0b;">Pack Size Confirmation</strong> — the requested quantity for <strong style="color:#00f2fe;">"${currentMatch.name}"</strong> uses a different Pack Size than Master Data:<br>Existing Pack: <strong>${currentMatch.existingPack}</strong> &nbsp;|&nbsp; Scanned Pack: <strong>${currentMatch.scannedPack}</strong><br><br>Should the system create a new Pack Size variant, or reuse the existing record?`;
++                document.getElementById("ocr-match-message").innerHTML = `<strong style="color:#f59e0b;">Pack Size Confirmation</strong> — the requested quantity for <strong style="color:#00f2fe;">"${safeMatchName}"</strong> uses a different Pack Size than Master Data:<br>Existing Pack: <strong>${this.escapeHtml(currentMatch.existingPack)}</strong> &nbsp;|&nbsp; Scanned Pack: <strong>${this.escapeHtml(currentMatch.scannedPack)}</strong><br><br>Should the system create a new Pack Size variant, or reuse the existing record?`;
+             } else {
+-                document.getElementById("ocr-match-message").innerHTML = `Multiple medicines match the OCR result for <strong style="color:#00f2fe;">"${currentMatch.name}"</strong>. Please confirm the correct medicine.`;
++                document.getElementById("ocr-match-message").innerHTML = `Multiple medicines match the OCR result for <strong style="color:#00f2fe;">"${safeMatchName}"</strong>. Please confirm the correct medicine.`;
+             }
+             
+             const optionsDiv = document.getElementById("ocr-match-options");
+@@ -11107,7 +11165,9 @@
+             // Add New Medicine, Edit OCR Text, or Cancel below.
+             const msgEl = document.getElementById("medicine-not-found-message");
+             if (msgEl) {
+-                msgEl.innerHTML = `Medicine <strong style="color:#ff6b6b;">"${currentMatch.name}"</strong> could not be matched in Master Data by Brand Name, Strength and Dosage Form.<br>Choose how you'd like to proceed.`;
++                // currentMatch.name is OCR-derived; escape before innerHTML (see
++                // POST_IMPLEMENTATION_AUDIT.md, "Pre-existing HTML injection surface").
++                msgEl.innerHTML = `Medicine <strong style="color:#ff6b6b;">"${this.escapeHtml(currentMatch.name)}"</strong> could not be matched in Master Data by Brand Name, Strength and Dosage Form.<br>Choose how you'd like to proceed.`;
+             }
+             const editGroup = document.getElementById("medicine-not-found-edit-group");
+             if (editGroup) editGroup.style.display = "none";
+@@ -12083,49 +12143,74 @@
+ 
+                     tr.innerHTML = `
+                         <td>
+-                            <input type="text" class="edit-item-supplier" value="${billItem.supplier_name}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 100px; font-size: 0.8rem;">
++                            <input type="text" class="edit-item-supplier" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 100px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-billdate" value="${billItem.purchaseDate}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 90px; font-size: 0.8rem; font-family: monospace;">
++                            <input type="text" class="edit-item-billdate" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 90px; font-size: 0.8rem; font-family: monospace;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-name" value="${billItem.name}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 220px; min-width: 220px; font-size: 0.8rem; font-weight: 600;">
+-                            <input type="hidden" class="edit-item-code" list="inventory-codes-list" value="${defaultCode}">
++                            <input type="text" class="edit-item-name" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 220px; min-width: 220px; font-size: 0.8rem; font-weight: 600;">
++                            <input type="hidden" class="edit-item-code" list="inventory-codes-list">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-brand" value="${billItem.brand_name}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;">
++                            <input type="text" class="edit-item-brand" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-drug" value="${billItem.drug_name}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 160px; min-width: 160px; font-size: 0.8rem;">
++                            <input type="text" class="edit-item-drug" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 160px; min-width: 160px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-batch" value="${batchVal}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem; font-family: monospace;">
++                            <input type="text" class="edit-item-batch" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem; font-family: monospace;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-exp" value="${expVal}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 70px; font-size: 0.8rem; font-family: monospace;">
++                            <input type="text" class="edit-item-exp" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 70px; font-size: 0.8rem; font-family: monospace;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-pack" value="${billItem.pack}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
++                            <input type="text" class="edit-item-pack" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-qty" value="${qtyVal}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;">
++                            <input type="text" class="edit-item-qty" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="number" class="edit-item-free" value="${freeVal}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
++                            <input type="number" class="edit-item-free" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-discount" value="${billItem.discount_percent}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
++                            <input type="text" class="edit-item-discount" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="number" step="0.01" class="edit-item-mrp" value="${mrpVal}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;">
++                            <input type="number" step="0.01" class="edit-item-mrp" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;">
+                         </td>
+                         <td>
+-                            <input type="text" class="edit-item-gst" value="${billItem.gst}" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
++                            <input type="text" class="edit-item-gst" readonly style="background: transparent; border: 1px solid transparent; color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;">
+                         </td>
+                         <td class="ext-row-delete-cell hidden">
+-                            <button class="btn-row-delete" onclick="this.closest('tr').remove(); window.app.updateExtractedItemCount();" title="Delete row" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 6px; cursor: pointer; padding: 3px 7px; font-size: 0.85rem; line-height: 1;">✕</button>
++                            <button class="btn-row-delete" title="Delete row" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 6px; cursor: pointer; padding: 3px 7px; font-size: 0.85rem; line-height: 1;">✕</button>
+                         </td>
+                     `;
++                    // All values below are OCR-derived (Gemini bill extraction) --
++                    // assigned via the .value DOM property rather than baked into
++                    // the HTML string above, so a maliciously-crafted supplier
++                    // bill image can never break out of an attribute and inject
++                    // markup/script here (see POST_IMPLEMENTATION_AUDIT.md,
++                    // "Pre-existing HTML injection surface" -- this is the
++                    // highest-traffic OCR render path, hit on every bill scan).
++                    tr.querySelector(".edit-item-supplier").value = billItem.supplier_name;
++                    tr.querySelector(".edit-item-billdate").value = billItem.purchaseDate;
++                    tr.querySelector(".edit-item-name").value = billItem.name;
++                    tr.querySelector(".edit-item-code").value = defaultCode;
++                    tr.querySelector(".edit-item-brand").value = billItem.brand_name;
++                    tr.querySelector(".edit-item-drug").value = billItem.drug_name;
++                    tr.querySelector(".edit-item-batch").value = batchVal;
++                    tr.querySelector(".edit-item-exp").value = expVal;
++                    tr.querySelector(".edit-item-pack").value = billItem.pack;
++                    tr.querySelector(".edit-item-qty").value = qtyVal;
++                    tr.querySelector(".edit-item-free").value = freeVal;
++                    tr.querySelector(".edit-item-discount").value = billItem.discount_percent;
++                    tr.querySelector(".edit-item-mrp").value = mrpVal;
++                    tr.querySelector(".edit-item-gst").value = billItem.gst;
++                    tr.querySelector(".btn-row-delete").addEventListener("click", () => {
++                        tr.remove();
++                        this.updateExtractedItemCount();
++                    });
+                     tableBody.appendChild(tr);
+                     this.bindExtractedRowEvents(tr);
+                 });
+@@ -12253,9 +12338,13 @@
+ 
+             const tr = document.createElement("tr");
+             tr.style.animation = "fadeIn 0.3s ease";
++            // supplier/date can carry OCR-derived text (pre-filled from the
++            // last scan into #ext-supplier/#ext-invoice-date) -- assign via
++            // .value rather than baking into the HTML string, same reasoning
++            // as renderExtractedItems above.
+             tr.innerHTML = `
+-                <td><input type="text" class="edit-item-supplier" value="${supplier}" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 100px; font-size: 0.8rem;"></td>
+-                <td><input type="text" class="edit-item-billdate" value="${date}" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 90px; font-size: 0.8rem; font-family: monospace;"></td>
++                <td><input type="text" class="edit-item-supplier" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 100px; font-size: 0.8rem;"></td>
++                <td><input type="text" class="edit-item-billdate" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 90px; font-size: 0.8rem; font-family: monospace;"></td>
+                 <td><input type="text" class="edit-item-name" value="" placeholder="Medicine Name" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 220px; min-width: 220px; font-size: 0.8rem; font-weight: 600;"><input type="hidden" class="edit-item-code" list="inventory-codes-list" value=""></td>
+                 <td><input type="text" class="edit-item-brand" value="" placeholder="Brand" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;"></td>
+                 <td><input type="text" class="edit-item-drug" value="" placeholder="Drug" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 160px; min-width: 160px; font-size: 0.8rem;"></td>
+@@ -12265,7 +12354,7 @@
+                 <td>
+                     <input type="number" class="edit-item-qty" value="" placeholder="Qty" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 70px; font-size: 0.8rem;">
+                     <div class="edit-item-due-toggle" style="margin-top:3px;">
+-                        <button type="button" class="btn-mark-due" onclick="window.app.toggleRowDueInput(this)" title="Mark part of this quantity as Supplier Due (short-supplied)" style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; border-radius: 5px; cursor: pointer; padding: 2px 6px; font-size: 0.68rem; white-space: nowrap;">+ Due</button>
++                        <button type="button" class="btn-mark-due" title="Mark part of this quantity as Supplier Due (short-supplied)" style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; border-radius: 5px; cursor: pointer; padding: 2px 6px; font-size: 0.68rem; white-space: nowrap;">+ Due</button>
+                         <input type="number" class="edit-item-due-qty hidden" placeholder="Due qty" min="0" style="display:none; margin-top:3px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.35); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 70px; font-size: 0.8rem;">
+                     </div>
+                 </td>
+@@ -12274,9 +12363,16 @@
+                 <td><input type="number" step="0.01" class="edit-item-mrp" value="" placeholder="MRP" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 80px; font-size: 0.8rem;"></td>
+                 <td><input type="text" class="edit-item-gst" value="5%" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-primary); padding: 4px 8px; border-radius: 6px; width: 60px; font-size: 0.8rem;"></td>
+                 <td class="ext-row-delete-cell">
+-                    <button class="btn-row-delete" onclick="this.closest('tr').remove(); window.app.updateExtractedItemCount();" title="Delete row" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 6px; cursor: pointer; padding: 3px 7px; font-size: 0.85rem; line-height: 1;">✕</button>
++                    <button class="btn-row-delete" title="Delete row" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 6px; cursor: pointer; padding: 3px 7px; font-size: 0.85rem; line-height: 1;">✕</button>
+                 </td>
+             `;
++            tr.querySelector(".edit-item-supplier").value = supplier;
++            tr.querySelector(".edit-item-billdate").value = date;
++            tr.querySelector(".btn-mark-due").addEventListener("click", function () { window.app.toggleRowDueInput(this); });
++            tr.querySelector(".btn-row-delete").addEventListener("click", () => {
++                tr.remove();
++                this.updateExtractedItemCount();
++            });
+             tbody.appendChild(tr);
+             this.bindExtractedRowEvents(tr);
+             this.updateExtractedItemCount();
+@@ -12306,17 +12402,36 @@
+             const row = document.createElement("div");
+             row.className = "bill-builder-row";
+             row.id = rowId;
++            // nameValue (and, less commonly, the other pre-filled values below)
++            // can originate from OCR extraction (Gemini/local). Building them
++            // into the `value="..."` attribute via string interpolation would
++            // let a crafted document break out of the attribute and inject
++            // markup/script (see POST_IMPLEMENTATION_AUDIT.md, "Pre-existing
++            // HTML injection surface"). Instead, the inputs are created with
++            // empty value attributes and populated via the `.value` DOM
++            // property immediately after insertion, which never parses its
++            // content as HTML regardless of what characters it contains.
+             row.innerHTML = `
+-                <input type="text" class="bill-manual-name" list="manual-bill-tablets-list" placeholder="Medicine Name" value="${nameValue}" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
+-                <input type="text" class="bill-manual-exp" placeholder="MM/YY" value="${expValue}" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
+-                <input type="number" class="bill-manual-qty" min="1" placeholder="Qty" value="${qtyValue}" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
+-                <input type="number" step="0.01" class="bill-manual-cost" min="0" placeholder="Cost Price" value="${costVal}" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
+-                <input type="number" step="0.01" class="bill-manual-mrp" min="0" placeholder="MRP" value="${mrpValue}" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
+-                <input type="text" class="bill-manual-gst" placeholder="GST %" value="${gstValue}" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
+-                <button type="button" class="btn btn-icon-only danger" onclick="document.getElementById('${rowId}').remove()" title="Remove row" style="padding: 4px;">
++                <input type="text" class="bill-manual-name" list="manual-bill-tablets-list" placeholder="Medicine Name" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
++                <input type="text" class="bill-manual-exp" placeholder="MM/YY" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
++                <input type="number" class="bill-manual-qty" min="1" placeholder="Qty" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
++                <input type="number" step="0.01" class="bill-manual-cost" min="0" placeholder="Cost Price" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
++                <input type="number" step="0.01" class="bill-manual-mrp" min="0" placeholder="MRP" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
++                <input type="text" class="bill-manual-gst" placeholder="GST %" required style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
++                <button type="button" class="btn btn-icon-only danger" title="Remove row" style="padding: 4px;">
+                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                 </button>
+             `;
++            row.querySelector(".bill-manual-name").value = nameValue;
++            row.querySelector(".bill-manual-exp").value = expValue;
++            row.querySelector(".bill-manual-qty").value = qtyValue;
++            row.querySelector(".bill-manual-cost").value = costVal;
++            row.querySelector(".bill-manual-mrp").value = mrpValue;
++            row.querySelector(".bill-manual-gst").value = gstValue;
++            row.querySelector(".btn-icon-only.danger").addEventListener("click", () => {
++                const el = document.getElementById(rowId);
++                if (el) el.remove();
++            });
+             container.appendChild(row);
+ 
+             const mrpInput = row.querySelector(".bill-manual-mrp");
+@@ -12833,6 +12948,137 @@
+             return queue.results();
+         }
+ 
++        // Priority 2 -- Batch OCR queue, wired into the production Bill
++        // Processing UI. Runs scanImagesBatch (unchanged) to OCR every
++        // selected file IN PARALLEL, bounded by concurrency, with a live
++        // progress bar. Deliberately does NOT try to auto-import every
++        // result: duplicate-detection, medicine matching, and validation in
++        // importExtractedBillResolved() are all per-invoice-header-form,
++        // synchronous-looking-but-sometimes-modal-interrupted flows that
++        // must not be touched or raced against each other. Instead, once
++        // scanning finishes, successfully-parsed bills are queued in
++        // memory and the user reviews/imports them ONE AT A TIME through
++        // the exact same, completely unmodified Extracted Items table and
++        // "Verify & Import Stock" button -- this only parallelizes OCR.
++        async startBatchBillScan(files) {
++            const progressPanel = document.getElementById("batch-ocr-progress");
++            const progressLabel = document.getElementById("batch-ocr-progress-label");
++            const progressPct = document.getElementById("batch-ocr-progress-pct");
++            const progressBar = document.getElementById("batch-ocr-progress-bar");
++
++            if (progressPanel) progressPanel.classList.remove("hidden");
++            if (progressLabel) progressLabel.textContent = `Scanning 0 of ${files.length}...`;
++            if (progressPct) progressPct.textContent = "0%";
++            if (progressBar) progressBar.style.width = "0%";
++
++            this.showToast(`Batch scanning ${files.length} bill(s)...`, "info");
++
++            let results;
++            try {
++                results = await this.scanImagesBatch(files, "bill", {
++                    concurrency: 2,
++                    onProgress: (state) => {
++                        const done = state.done + state.failed + state.cancelled;
++                        if (progressLabel) progressLabel.textContent = `Scanning ${done} of ${state.total}...`;
++                        if (progressPct) progressPct.textContent = `${state.percentComplete}%`;
++                        if (progressBar) progressBar.style.width = `${state.percentComplete}%`;
++                    }
++                });
++            } catch (err) {
++                if (progressPanel) progressPanel.classList.add("hidden");
++                this.showToast(`Batch scan failed: ${err.message}`, "error");
++                return;
++            }
++
++            if (progressPanel) progressPanel.classList.add("hidden");
++
++            const succeeded = results.filter(r => r.status === "done" && r.result && r.result.parsed);
++            const failed = results.filter(r => r.status !== "done");
++
++            if (failed.length > 0) {
++                this.triggerNotification(
++                    "OCR", "Batch scan: some files failed",
++                    `🟠 Batch Bill Scan\n${succeeded.length} of ${results.length} scanned successfully.\nFailed: ${failed.map(f => f.label).join(", ")}`,
++                    "Warning", { failedCount: failed.length, totalCount: results.length }
++                );
++            }
++
++            if (succeeded.length === 0) {
++                this.showToast(`Batch scan finished, but no bills could be read (${failed.length} failed). Try uploading them individually.`, "error");
++                return;
++            }
++
++            // Store the queue of successfully-scanned bills (raw parseSupplierBill
++            // output per file, same shape the single-scan flow produces) and
++            // load the first one into the existing review UI.
++            this._batchBillReviewQueue = succeeded.map(r => ({ fileName: r.label, parsed: r.result.parsed }));
++            this._batchBillReviewIndex = 0;
++
++            this.showToast(`Batch scan complete: ${succeeded.length} of ${results.length} bill(s) scanned. Review and import them one at a time below.`, "success");
++            this._loadBatchBillReviewItem(0);
++        }
++
++        // Loads one already-scanned batch result into the SAME
++        // renderExtractedItems table the single-file flow uses --
++        // mirrors the exact supplier/invoiceNo/invoiceDate/items mapping
++        // used at the single-scan completion site (see runStagedOCRScan),
++        // without modifying that function.
++        _loadBatchBillReviewItem(index) {
++            const queue = this._batchBillReviewQueue;
++            if (!queue || !queue[index]) return;
++
++            const { parsed, fileName } = queue[index];
++            const supplier = parsed.supplier_name || "Extracted Supplier";
++            const invoiceNo = parsed.invoice_number || "OCR-" + Math.floor(Math.random() * 90000 + 10000);
++            const invoiceDate = parsed.purchase_date || new Date().toISOString().split('T')[0];
++            const items = (parsed.items || []).map(item => this.validateOCRFields(item, "bill", supplier));
++
++            if (items.length === 0) {
++                this.showToast(`"${fileName}" produced zero medicine rows -- skipping to the next batch item.`, "warning");
++                this._advanceBatchBillReview(index);
++                return;
++            }
++
++            this.renderExtractedItems(items, supplier, invoiceNo, invoiceDate);
++            document.getElementById("extracted-invoice-details")?.classList.remove("hidden");
++            this._updateBatchNextButton();
++            this.showToast(`Reviewing "${fileName}" (${index + 1} of ${queue.length} in this batch).`, "info");
++        }
++
++        _updateBatchNextButton() {
++            const btn = document.getElementById("btn-batch-next");
++            const remainingLabel = document.getElementById("batch-next-remaining");
++            const queue = this._batchBillReviewQueue;
++            const hasMore = queue && this._batchBillReviewIndex < queue.length - 1;
++            if (btn) btn.classList.toggle("hidden", !hasMore);
++            if (remainingLabel) {
++                remainingLabel.classList.toggle("hidden", !hasMore);
++                if (hasMore) remainingLabel.textContent = `${queue.length - this._batchBillReviewIndex - 1} more scanned`;
++            }
++        }
++
++        // User-driven advance -- clicking "Next Scanned Bill" does NOT try
++        // to infer whether the current one was imported (importExtractedBillResolved
++        // is async and can be interrupted by the Medicine Confirmation
++        // modal), so it's a deliberate manual step, not automatic chaining.
++        loadNextBatchBillResult() {
++            this._advanceBatchBillReview(this._batchBillReviewIndex);
++        }
++
++        _advanceBatchBillReview(fromIndex) {
++            if (!this._batchBillReviewQueue) return;
++            const nextIndex = fromIndex + 1;
++            if (nextIndex >= this._batchBillReviewQueue.length) {
++                this.showToast("That was the last bill in this batch.", "info");
++                this._batchBillReviewQueue = null;
++                this._batchBillReviewIndex = 0;
++                this._updateBatchNextButton();
++                return;
++            }
++            this._batchBillReviewIndex = nextIndex;
++            this._loadBatchBillReviewItem(nextIndex);
++        }
++
+         // Phase 3.7 -- Confidence-based manual review flag.
+         // Additive helper: tags an already-normalized OCR item with
+         // needsReview=true if any of its per-field confidence values is

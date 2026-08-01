@@ -1,0 +1,387 @@
+--- /mnt/user-data/uploads/app.js	2026-07-18 09:24:56.934183000 +0000
++++ app.js	2026-07-18 09:44:16.549601178 +0000
+@@ -2198,15 +2198,25 @@
+             
+             let tabsPerStrip = 10;
+             let stripsPerBox = null; // Do not assume 10 strips per box by default!
++            let confident = false; // true only when a real regex match was found below --
++                                    // NOT when tabsPerStrip is still sitting at the
++                                    // hardcoded 10 fallback. Callers that are about to
++                                    // write this value permanently (new Master Data
++                                    // records, inventory quantity math with no existing
++                                    // Master Data to fall back on) must check this flag
++                                    // and route to Manual Review instead of trusting a
++                                    // silent guess.
+             
+             // Regex to match "10's", "15's", "30's", "45's", "50's", "100's" etc.
+             const packMatch = (cleanPack + " " + cleanName).match(/\b(10|15|20|30|45|50|100)\s*('?S|TABLETS|TABS|CAPS|CAPSU)\b/);
+             if (packMatch) {
+                 tabsPerStrip = parseInt(packMatch[1]);
++                confident = true;
+             } else {
+                 const numMatch = cleanPack.match(/\b(10|15|20|30|45|50|100)\b/);
+                 if (numMatch) {
+                     tabsPerStrip = parseInt(numMatch[1]);
++                    confident = true;
+                 }
+             }
+ 
+@@ -2219,6 +2229,7 @@
+             if (multMatch) {
+                 stripsPerBox = parseInt(multMatch[1]);
+                 tabsPerStrip = parseInt(multMatch[2]);
++                confident = true;
+             } else if (cleanPack.includes("STRIP")) {
+                 const stripMatch = cleanPack.match(/\b(\d+)\s*STRIP/);
+                 if (stripMatch) {
+@@ -2229,7 +2240,8 @@
+             return {
+                 tabsPerStrip: tabsPerStrip,
+                 stripsPerBox: stripsPerBox,
+-                totalTablets: stripsPerBox ? (tabsPerStrip * stripsPerBox) : tabsPerStrip
++                totalTablets: stripsPerBox ? (tabsPerStrip * stripsPerBox) : tabsPerStrip,
++                confident: confident
+             };
+         }
+ 
+@@ -2297,6 +2309,13 @@
+             
+             const packSize = this.parsePackSize(packStr, medicineName);
+             const tabsPerStrip = tabletMaster ? (tabletMaster.tabsPerStrip || packSize.tabsPerStrip) : packSize.tabsPerStrip;
++            // Master Data (tabletMaster) is authoritative and always wins when
++            // present -- this only matters for genuinely NEW/unmatched
++            // medicines, where there's no Master Data yet and the pack size
++            // came purely from a regex guess against OCR text. In that case,
++            // flag it instead of silently trusting a possibly-wrong default
++            // (see parsePackSize's `confident` flag).
++            const needsPackReview = !tabletMaster && !packSize.confident;
+             
+             let unit = detectedUnit;
+             if (!unit) {
+@@ -2329,7 +2348,8 @@
+             return {
+                 purchaseUnit: unit.charAt(0).toUpperCase() + unit.slice(1),
+                 totalUnits: totalUnits,
+-                tabsPerStrip: tabsPerStrip
++                tabsPerStrip: tabsPerStrip,
++                needsReview: needsPackReview
+             };
+         }
+ 
+@@ -5284,7 +5304,9 @@
+                 return await fetch(url, { ...options, signal: controller.signal });
+             } catch (err) {
+                 if (err.name === "AbortError") {
+-                    throw new Error(`Gemini request timed out after ${Math.round(timeoutMs / 1000)}s.`);
++                    const timeoutErr = new Error(`Gemini request timed out after ${Math.round(timeoutMs / 1000)}s.`);
++                    timeoutErr.isTimeout = true;
++                    throw timeoutErr;
+                 }
+                 throw err;
+             } finally {
+@@ -6895,7 +6917,7 @@
+                         } catch (err) {
+                             diag.resizeMs = this._lastOcrResizeMs || 0;
+                             diag.ocrTimeMs = Math.round(performance.now() - _geminiStart);
+-                            diag.geminiStatus = err.isGeminiBusy ? "BUSY" : "FAIL";
++                            diag.geminiStatus = err.geminiErrorLabel || (err.isGeminiBusy ? "Service Busy" : "OCR Extraction Failed");
+                             diag.jsonRepair = this._lastGeminiUsedJsonRepair ? "FAIL" : "N/A";
+                             diag.matched = 0;
+                             diag.manualReview = 0;
+@@ -7294,7 +7316,18 @@
+                 ["Manual Review", diag.manualReview !== undefined ? diag.manualReview : "—"],
+                 ["Total Time", diag.totalTimeMs !== undefined ? `${(diag.totalTimeMs / 1000).toFixed(1)} sec` : "—"]
+             ];
+-            const statusColor = (v) => (v === "PASS" ? "#4ade80" : v === "FAIL" ? "#f87171" : "#e5e7eb");
++            const AMBER_STATUSES = new Set(["Quota Exceeded", "Service Busy"]);
++            const statusColor = (v) => {
++                if (v === "PASS") return "#4ade80";
++                if (v === "FAIL") return "#f87171";
++                if (typeof v === "string" && AMBER_STATUSES.has(v)) return "#fbbf24";
++                if (typeof v === "string" && v.startsWith("Timeout")) return "#fbbf24";
++                if (typeof v === "string" && (
++                    v === "Invalid API Key" || v === "Invalid Model" || v === "Invalid Request" ||
++                    v === "JSON Parse Failed" || v === "OCR Extraction Failed"
++                )) return "#f87171";
++                return "#e5e7eb";
++            };
+ 
+             panel.innerHTML = `
+                 <div style="font-weight:600; color:#fff; margin-bottom:6px;">Scan Diagnostics</div>
+@@ -11101,7 +11134,7 @@
+                     discount_percent: item.discount_percent || "0%",
+                     batch: item.batch !== undefined && item.batch !== null ? item.batch : null,
+                     exp: item.exp !== undefined && item.exp !== null ? item.exp : null,
+-                    pack: item.pack || "10's",
++                    pack: item.pack || null,
+                     qty: item.qty !== undefined && item.qty !== null ? item.qty : null,
+                     free_qty: item.free_qty !== undefined && item.free_qty !== null ? item.free_qty : 0,
+                     cost: costVal,
+@@ -11177,6 +11210,15 @@
+                 const parsedQty = this.parseQtyAndUnit(billItem.qty, billItem.name, match);
+                 const qtyUnitsObj = this.calculateTotalUnits(billItem.name, parsedQty.qty, billItem.pack, parsedQty.unit, match);
+                 const totalUnits = qtyUnitsObj.totalUnits;
++                // New medicine (no Master Data match) AND the pack size was a
++                // regex guess, not a confirmed read -- do not silently accept
++                // whatever tabsPerStrip default was used. Route to Manual
++                // Review instead of letting an unconfirmed guess become
++                // permanent inventory/Master Data.
++                if (qtyUnitsObj.needsReview && !billItem.needsPackReview) {
++                    billItem.needsPackReview = true;
++                    billItem.status = "manual_review";
++                }
+ 
+                 if (targetCat === "Tablets & Capsules") {
+                     const uName = billItem.name.toUpperCase();
+@@ -11793,6 +11835,48 @@
+                 /try again later/.test(msg);
+         }
+ 
++        // Precise failure classifier used for (1) deciding what's safe to
++        // retry and (2) showing a real reason in Scan Diagnostics instead of
++        // a generic FAIL. Kept separate from _isGeminiBusyError (still used
++        // for the exhausted-retry busy-banner check) so neither function's
++        // existing callers change behavior.
++        //
++        // Retryable: timeout, quota (429), service unavailable/overloaded (503).
++        // NOT retryable: auth (401/403), invalid request (400), invalid/unknown
++        // model (404 "not found"), malformed JSON (handled by its own existing
++        // one-shot repair attempt, not the general retry loop).
++        _classifyGeminiError(err) {
++            if (!err) return { code: "unknown", label: "OCR Extraction Failed", retryable: false };
++
++            const status = err.httpStatus;
++            const msg = (err.message || "").toLowerCase();
++
++            if (err.isTimeout || /timed out/.test(msg)) {
++                return { code: "timeout", label: "Timeout", retryable: true };
++            }
++            if (status === 401 || status === 403 || /api key not valid/.test(msg) || /permission denied/.test(msg)) {
++                return { code: "auth", label: "Invalid API Key", retryable: false };
++            }
++            if (status === 404 || (/not found/.test(msg) && /model/.test(msg))) {
++                return { code: "invalid_model", label: "Invalid Model", retryable: false };
++            }
++            if (status === 400) {
++                return { code: "invalid_request", label: "Invalid Request", retryable: false };
++            }
++            if (status === 429 || /\b429\b/.test(msg) || /quota.*exceed/.test(msg)) {
++                return { code: "quota", label: "Quota Exceeded", retryable: true };
++            }
++            if (status === 503 || /\b503\b/.test(msg) || /overloaded/.test(msg) ||
++                /service unavailable/.test(msg) || /temporarily unavailable/.test(msg) ||
++                /high demand/.test(msg) || /try again later/.test(msg)) {
++                return { code: "service_busy", label: "Service Busy", retryable: true };
++            }
++            if (/invalid ai response format/.test(msg)) {
++                return { code: "invalid_json", label: "JSON Parse Failed", retryable: false };
++            }
++            return { code: "unknown", label: "OCR Extraction Failed", retryable: false };
++        }
++
+         async runSharedGeminiVisionOCR(base64Data, mimeType, prompt, onProgress) {
+             const apiKey = localStorage.getItem("ti_ai_key");
+             if (!apiKey) {
+@@ -11859,12 +11943,15 @@
+             this._lastGeminiUsedJsonRepair = false;
+             this._lastGeminiRetryLog = retryLog;
+ 
+-            let lastBusyErr = null;
++            let lastRetryableErr = null;
++            let lastRetryableCode = null; // "timeout" | "quota" | "service_busy" -- tracked so the
++                                           // exhausted-retry message/reason reflects what actually
++                                           // happened instead of always saying "busy".
+ 
+             for (let i = 0; i < attemptPlan.length; i++) {
+                 const { model, waitBeforeMs } = attemptPlan[i];
+                 if (waitBeforeMs > 0) {
+-                    console.log(`[Gemini OCR] High demand -- waiting ${waitBeforeMs / 1000}s before attempt ${i + 1} (${model})`);
++                    console.log(`[Gemini OCR] Waiting ${waitBeforeMs / 1000}s before attempt ${i + 1} (${model})`);
+                     if (typeof onProgress === "function") {
+                         onProgress({ phase: "waiting", attempt: i + 1, total: attemptPlan.length, model, waitMs: waitBeforeMs });
+                     }
+@@ -11882,18 +11969,25 @@
+                     console.log(`[Gemini OCR] Attempt ${i + 1} (${model}) SUCCESS`);
+                     return parsed;
+                 } catch (err) {
+-                    const busy = this._isGeminiBusyError(err);
+-
+-                    if (!busy) {
+-                        // Genuine failure. Only a malformed-JSON response gets a
+-                        // single stricter-prompt repair retry (same behavior as
+-                        // before) -- everything else (auth, decode, network,
+-                        // unsupported file, missing key) propagates immediately
+-                        // as a hard error so the caller can raise a Critical Alert.
+-                        retryLog.push({ attempt: i + 1, model, status: "FAILED", error: err.message, ms: Math.round(performance.now() - attemptStart) });
+-                        console.error(`[Gemini OCR] Attempt ${i + 1} (${model}) FAILED (non-retryable): ${err.message}`);
+-
+-                        if (/Invalid AI response format/i.test(err.message)) {
++                    const classification = this._classifyGeminiError(err);
++                    err.geminiErrorCode = classification.code;
++                    err.geminiErrorLabel = classification.label;
++
++                    if (!classification.retryable) {
++                        // Auth (401/403), invalid request (400), invalid/unknown
++                        // model (404), and unclassified errors are genuine,
++                        // non-transient failures -- retrying them wastes the
++                        // finite attempt budget on something that will never
++                        // succeed, and (for auth/invalid-request) could look
++                        // like it's "still trying" when it's actually
++                        // misconfigured. They propagate immediately.
++                        retryLog.push({ attempt: i + 1, model, status: "FAILED", reason: classification.label, error: err.message, ms: Math.round(performance.now() - attemptStart) });
++                        console.error(`[Gemini OCR] Attempt ${i + 1} (${model}) FAILED (non-retryable: ${classification.label}): ${err.message}`);
++
++                        // Malformed JSON keeps its existing single stricter-prompt
++                        // repair attempt -- unchanged business logic, just now
++                        // tagged with a precise reason if the repair also fails.
++                        if (classification.code === "invalid_json") {
+                             console.warn("Gemini OCR response wasn't valid JSON, retrying ONCE with a stricter prompt:", err);
+                             this._lastGeminiUsedJsonRepair = true;
+                             const stricterPrompt = prompt + `
+@@ -11905,33 +11999,49 @@
+                                 return parsed;
+                             } catch (repairErr) {
+                                 this._lastGeminiUsedJsonRepair = "FAIL";
++                                const repairClassification = this._classifyGeminiError(repairErr);
++                                repairErr.geminiErrorCode = repairClassification.code === "unknown" ? "invalid_json" : repairClassification.code;
++                                repairErr.geminiErrorLabel = repairClassification.code === "unknown" ? "JSON Parse Failed" : repairClassification.label;
+                                 throw repairErr;
+                             }
+                         }
+                         throw err;
+                     }
+ 
+-                    // High-demand response (429 / 503 / overloaded / quota).
+-                    // This is NOT an OCR failure -- log it and move on to the
+-                    // next attempt in the plan.
+-                    retryLog.push({ attempt: i + 1, model, status: "BUSY", error: err.message, ms: Math.round(performance.now() - attemptStart) });
+-                    console.warn(`[Gemini OCR] Attempt ${i + 1} (${model}) BUSY: ${err.message}`);
++                    // Retryable: timeout, quota (429), or service unavailable/
++                    // overloaded (503). Same finite attempt plan as before
++                    // (max 3 attempts total, flash/flash/pro) -- timeouts just
++                    // now consume a slot and get a real retry instead of
++                    // failing hard on attempt 1.
++                    const statusLabel = classification.code === "timeout" ? "TIMEOUT" : "BUSY";
++                    retryLog.push({ attempt: i + 1, model, status: statusLabel, reason: classification.label, error: err.message, ms: Math.round(performance.now() - attemptStart) });
++                    console.warn(`[Gemini OCR] Attempt ${i + 1} (${model}) ${classification.label}: ${err.message}`);
+                     if (typeof onProgress === "function") {
+-                        onProgress({ phase: "busy", attempt: i + 1, total: attemptPlan.length, model });
++                        onProgress({ phase: classification.code === "timeout" ? "timeout" : "busy", attempt: i + 1, total: attemptPlan.length, model });
+                     }
+-                    lastBusyErr = err;
++                    lastRetryableErr = err;
++                    lastRetryableCode = classification.code;
+                 }
+             }
+ 
+             // All attempts in the plan were exhausted and every single one was
+-            // a "busy" response. Signal this distinctly (isGeminiBusy) so
+-            // callers show a Warning + Retry/Cancel, never a Critical Alert,
+-            // and never auto-switch away from the scanner.
+-            console.warn(`[Gemini OCR] All ${attemptPlan.length} attempts exhausted, model remained busy. Total: ${retryLog.reduce((s, r) => s + (r.ms || 0), 0)}ms`);
+-            const busyError = new Error("Gemini Vision is temporarily busy. Your image is still loaded. Please Retry in a few moments.");
++            // retryable (timeout and/or 429/503). Signal this distinctly
++            // (isGeminiBusy) so callers show a Warning + Retry/Cancel, never a
++            // Critical Alert, and never auto-switch away from the scanner --
++            // but say WHICH transient condition it actually was.
++            const allTimeouts = retryLog.every(r => r.status === "TIMEOUT");
++            console.warn(`[Gemini OCR] All ${attemptPlan.length} attempts exhausted (${lastRetryableCode || "busy"}). Total: ${retryLog.reduce((s, r) => s + (r.ms || 0), 0)}ms`);
++            const exhaustedMessage = allTimeouts
++                ? `Gemini requests kept timing out after ${attemptPlan.length} attempts. Your image is still loaded. Please Retry in a few moments.`
++                : "Gemini Vision is temporarily busy. Your image is still loaded. Please Retry in a few moments.";
++            const busyError = new Error(exhaustedMessage);
+             busyError.isGeminiBusy = true;
+             busyError.retryLog = retryLog;
+-            busyError.cause = lastBusyErr;
++            busyError.cause = lastRetryableErr;
++            busyError.geminiErrorCode = lastRetryableCode || "service_busy";
++            busyError.geminiErrorLabel = lastRetryableCode === "timeout"
++                ? `Timeout (Failed after ${attemptPlan.length} attempts)`
++                : (lastRetryableCode === "quota" ? "Quota Exceeded" : "Service Busy");
+             throw busyError;
+         }
+ 
+@@ -11990,6 +12100,30 @@
+                 }
+                 return parsed;
+             }
++            if (type === "bill") {
++                // Same fold-back as the "order" branch above, and for the
++                // same reason: the Bill prompt now asks Gemini for strength
++                // as its own field (so it can be read/scored independently),
++                // but every downstream consumer of a bill row -- 
++                // validateOCRFields, resolveMedicine, renderExtractedItems --
++                // only ever reads medicine_name. Fold strength back in here,
++                // once, so medicine_name keeps its current shape/meaning and
++                // nothing downstream needs to change.
++                const items = Array.isArray(parsed) ? parsed : (parsed && parsed.items);
++                if (Array.isArray(items)) {
++                    items.forEach(it => {
++                        if (it.medicine_name && it.strength !== undefined && it.strength !== null && it.strength !== "") {
++                            const strengthStr = String(it.strength).trim();
++                            const unitStr = (it.strength_unit || "MG").toString().trim().toUpperCase();
++                            const alreadyPresent = new RegExp(`\\b${strengthStr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*${unitStr}\\b`, "i").test(it.medicine_name);
++                            if (strengthStr && !alreadyPresent) {
++                                it.medicine_name = `${it.medicine_name.trim()} ${strengthStr}${unitStr}`;
++                            }
++                        }
++                    });
++                }
++                return parsed;
++            }
+             // Supplier Bill: Gemini's field names already match the extraction
+             // schema 1:1 -- no renaming needed, field coercion/defaulting is
+             // handled per-row by validateOCRFields() instead.
+@@ -12017,7 +12151,7 @@
+                     discount_percent: item.discount_percent || "0%",
+                     batch: item.batch_number || null,
+                     exp: item.expiry_date || null,
+-                    pack: item.pack_size || "10's",
++                    pack: item.pack_size || null,
+                     qty: item.quantity !== undefined && item.quantity !== null && item.quantity !== "" ? parseInt(item.quantity) : null,
+                     free_qty: item.free_qty !== undefined && item.free_qty !== null && item.free_qty !== "" ? parseInt(item.free_qty) : 0,
+                     cost: costVal,
+@@ -12045,7 +12179,9 @@
+ 
+ For each medicine/tablet row in the table, extract:
+ - supplier_name: supplier name (LPH, MUTHU, VCARE, etc. matching the top supplier name if not specified in the row).
+-- medicine_name: Exact tablet name (e.g. "USV L. ROSEDAY 20MG" or "ROS-20").
++- medicine_name: Exact tablet name AS PRINTED, including strength if it's part of the printed name (e.g. "USV L. ROSEDAY 20MG" or "ROS-20").
++- strength: the MG/MCG/ML/etc. number ONLY (e.g. "20" not "20mg"), extracted separately from medicine_name so it can be validated on its own. Many brands are sold in multiple strengths of the exact same name (e.g. "ROSEDAY 10MG" vs "ROSEDAY 20MG" are different products) -- read every digit of the strength carefully, even if it's in a smaller font or adjoining the name with no space. Leave empty only if the row genuinely has no strength printed anywhere.
++- strength_unit: MG/MCG/G/ML/IU/% (default MG).
+ - brand_name: Manufacturer or brand name abbreviation (e.g. "USV", "LUPIN", "CIPLA").
+ - drug_name: Active ingredient/chemical name of the medicine (e.g. "Rosuvastatin" for ROSEDAY, "Metformin" for GLYCOMET, "Calcium + Vitamin D3" for SUPRACAL XT, etc.). If not explicitly written on the bill, use your medical knowledge to fill this column based on the medicine name.
+ - batch_number: Batch number.
+@@ -12058,7 +12194,7 @@
+ - gst_percent: GST percentage (e.g. "5%" or "12%").
+ - purchase_rate: Purchase rate/cost price.
+ - confidence_score: Overall confidence (0 to 100) for this row.
+-- field_confidence: an object with a SEPARATE 0-100 confidence for EACH of brand_name, pack_size, and quantity individually, e.g. {"brand_name": 99, "pack_size": 81, "quantity": 100}.
++- field_confidence: an object with a SEPARATE 0-100 confidence for EACH of brand_name, strength, pack_size, and quantity individually, e.g. {"brand_name": 99, "strength": 90, "pack_size": 81, "quantity": 100}.
+ 
+ IGNORE and do not extract into items: hospital/customer/supplier addresses, phone numbers, emails, GSTIN, CIN, PAN, IFSC, bank account details, QR codes, barcodes, invoice footer text, terms & conditions, page numbers, watermarks, signatures, the total amount line, and tax summary rows — these are not medicine rows.
+ 
+@@ -12071,6 +12207,8 @@
+     {
+       "supplier_name": "e.g. LPH, MUTHU, VCARE, or others",
+       "medicine_name": "CAPITALIZED MEDICINE NAME",
++      "strength": "20",
++      "strength_unit": "MG",
+       "brand_name": "Brand/Mfr abbreviation",
+       "drug_name": "Active ingredient chemical name",
+       "batch_number": "Batch No or null",
+@@ -12217,12 +12355,13 @@
+                 if (ocrStatusText) ocrStatusText.textContent = "AI OCR processing purchase bill...";
+ 
+                 validatedData = await this.parseSupplierBill(base64Data, mimeType);
++                validatedData = this.normalizeOCRResponse(validatedData, "bill");
+                 diag.geminiStatus = "PASS";
+                 diag.jsonRepair = this._lastGeminiUsedJsonRepair ? "PASS (retried)" : "N/A";
+             } catch (err) {
+                 diag.resizeMs = this._lastOcrResizeMs || 0;
+                 diag.ocrTimeMs = Math.round(performance.now() - _geminiStart);
+-                diag.geminiStatus = "FAIL";
++                diag.geminiStatus = err.geminiErrorLabel || (err.isGeminiBusy ? "Service Busy" : "OCR Extraction Failed");
+                 diag.jsonRepair = this._lastGeminiUsedJsonRepair ? "FAIL" : "N/A";
+                 diag.matched = 0;
+                 diag.totalTimeMs = Math.round(performance.now() - _pipelineStart);

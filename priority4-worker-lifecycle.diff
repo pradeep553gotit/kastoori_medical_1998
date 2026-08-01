@@ -1,0 +1,102 @@
+--- d4/app.js	2026-07-23 17:45:54.000000000 +0000
++++ repo/app.js	2026-07-23 17:54:17.028481622 +0000
+@@ -10318,6 +10318,7 @@
+             } catch (err) { /* best-effort */ }
+             if (this._sessionTimeoutTimer) clearTimeout(this._sessionTimeoutTimer);
+             if (this._sessionCountdownInterval) clearInterval(this._sessionCountdownInterval);
++            await this._terminateLocalOCRWorker();
+             try {
+                 if (typeof window.__supabaseSignOut === "function") {
+                     await window.__supabaseSignOut();
+@@ -12745,6 +12746,32 @@
+             return providers;
+         }
+ 
++        // Priority 4 -- Local OCR Worker Lifecycle.
++        // TesseractProvider lazily creates and caches a worker
++        // (_getWorker/this._worker) the first time local OCR fallback
++        // fires, and its own terminate() already exists and is
++        // idempotent (guards on this._worker, clears it after). Nothing
++        // in production called it, so the worker lived for the entire
++        // page lifetime once created. Deliberately NOT terminating after
++        // every scan/batch -- that would recreate the worker repeatedly
++        // during normal usage (perf regression). Instead this is called
++        // only at session-end (sign-out) and as a best-effort safety net
++        // on page unload (see the pagehide listener near app bootstrap).
++        // Safe to call even if local OCR was never used (no provider /
++        // no worker created yet) or already terminated -- terminate()
++        // itself no-ops in both cases, and any failure is swallowed so
++        // it can never block sign-out or unload.
++        async _terminateLocalOCRWorker() {
++            try {
++                const tesseract = this._ocrProviders && this._ocrProviders.tesseract;
++                if (tesseract && typeof tesseract.terminate === "function") {
++                    await tesseract.terminate();
++                }
++            } catch (e) {
++                console.warn("[OCR] Local OCR worker termination failed (non-fatal):", e);
++            }
++        }
++
+         // Phase 3.1 entry point: run the new preprocessing module ahead of
+         // the existing resize step. Never called by the existing scan
+         // flows today (see note above) -- available for new batch/local
+@@ -13079,33 +13106,6 @@
+             this._loadBatchBillReviewItem(nextIndex);
+         }
+ 
+-        // Phase 3.7 -- Confidence-based manual review flag.
+-        // Additive helper: tags an already-normalized OCR item with
+-        // needsReview=true if any of its per-field confidence values is
+-        // below threshold. Does NOT change existing manualReview counters
+-        // (diag.manualReview) or validateOCRFields' own confidence_score
+-        // defaulting -- it only adds a `needsReview` boolean field for any
+-        // NEW UI (e.g. batch review screen) to key off, so existing
+-        // Manual Review gating logic is untouched.
+-        flagLowConfidenceFields(item, threshold = 60) {
+-            if (!item || typeof item !== "object") return item;
+-            let lowest = null;
+-            const scan = (obj) => {
+-                if (!obj || typeof obj !== "object") return;
+-                Object.values(obj).forEach(v => {
+-                    if (typeof v === "number" && (lowest === null || v < lowest)) lowest = v;
+-                });
+-            };
+-            if (item.confidence && typeof item.confidence === "object") scan(item.confidence);
+-            if (typeof item.confidence_score === "number") {
+-                lowest = lowest === null ? item.confidence_score : Math.min(lowest, item.confidence_score);
+-            }
+-            if (item.field_confidence && typeof item.field_confidence === "object") scan(item.field_confidence);
+-            item.needsReview = lowest !== null && lowest < threshold;
+-            item.lowestFieldConfidence = lowest;
+-            return item;
+-        }
+-
+         // ============================================================
+         // SHARED OCR ENGINE
+         // ------------------------------------------------------------
+@@ -16427,6 +16427,24 @@
+         initAuthGate();
+     } else {
+         window.addEventListener("DOMContentLoaded", initAuthGate);
++
++        // Priority 4 -- best-effort safety net for browser close/refresh.
++        // signOutApp() already terminates the local OCR worker on normal
++        // sign-out; this covers the case where the tab is closed/refreshed
++        // without signing out first. pagehide (not beforeunload) is used
++        // since it fires reliably on refresh/close/tab-switch-away
++        // without blocking navigation or prompting the user. Terminating
++        // a Tesseract worker is fire-and-forget from the page's
++        // perspective (the worker thread is torn down regardless once
++        // the page unloads), so this is purely a cleaner-shutdown nicety,
++        // not something the unload needs to wait on.
++        window.addEventListener("pagehide", () => {
++            try {
++                if (window.app && typeof window.app._terminateLocalOCRWorker === "function") {
++                    window.app._terminateLocalOCRWorker();
++                }
++            } catch (e) { /* ignore -- page is already unloading */ }
++        });
+     }
+ 
+ })();

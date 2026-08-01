@@ -1,0 +1,26 @@
+{
+  "seqSummary": {
+    "label": "Sequential (1 worker)",
+    "count": 20,
+    "totalMs": 18414,
+    "avgMs": 915.8,
+    "avgAcc": 0.9998901113482047,
+    "avgAccClean": 0.9998901113482047,
+    "avgAccDegraded": null,
+    "avgConf": 91.15,
+    "imagesPerHour": 3910.0684261974584,
+    "imagesPerDay10h": 39100.68426197459
+  },
+  "concSummary": {
+    "label": "Concurrent (1 workers, full 80-image set)",
+    "count": 80,
+    "totalMs": 54615,
+    "avgMs": 679.8375,
+    "avgAcc": 0.9990450465747411,
+    "avgAccClean": 0.9999463636466804,
+    "avgAccDegraded": 0.9963410953589225,
+    "avgConf": 91.5125,
+    "imagesPerHour": 5273.276572370228,
+    "imagesPerDay10h": 52732.76572370228
+  }
+}

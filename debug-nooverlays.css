@@ -1,0 +1,41 @@
+/* ============================================================
+   debug-nooverlays.css
+   ------------------------------------------------------------
+   ONE-SHOT BISECTION TEST -- not a permanent fix.
+
+   Loaded only when the URL contains ?debug=nooverlays (via the tiny
+   loader script below, which adds/removes this stylesheet based on
+   the flag). When active, it forcibly hides/neutralizes every
+   fixed-position or overlay-style component in the app at once:
+   sidebar, sidebar backdrop, drawer backdrop, modal backdrop,
+   notification drawer, toast container, mobile bottom nav, top
+   header, and any element carrying an inline full-viewport style.
+
+   Purpose: answer ONE question in ONE test -- if scrolling starts
+   working with ALL of these removed, the cause is definitely one of
+   them (and we bisect further with 1-2 more tests, not a dozen). If
+   scrolling STILL fails with every single one of these gone, that
+   rules out overlays entirely, in one shot, with certainty.
+   ============================================================ */
+
+.sidebar,
+.sidebar-drawer-backdrop,
+.modal-backdrop,
+.notification-drawer,
+.toast-container,
+.mobile-bottom-nav,
+.top-header,
+.sidebar-menu,
+#welcome-splash,
+#login-screen {
+    display: none !important;
+}
+
+/* Belt-and-braces: anything still in the DOM that happens to be
+   fixed/absolute and full-viewport-sized gets neutralized too, in
+   case something isn't caught by the class list above. */
+*[style*="position: fixed"],
+*[style*="position:fixed"] {
+    pointer-events: none !important;
+    display: none !important;
+}

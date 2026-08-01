@@ -1,0 +1,59 @@
+--- p311/index.html	2026-07-23 10:19:14.000000000 +0000
++++ repo/index.html	2026-07-23 10:50:40.017206865 +0000
+@@ -629,6 +629,33 @@
+                                         Load "Kastoori Medicals" Invoice
+                                     </button>
+                                 </div>
++
++                                <!-- Batch OCR (Priority 2): scans MULTIPLE SEPARATE bills in
++                                     parallel via the existing OCRQueue/scanImagesBatch, distinct
++                                     from the drag-and-drop above (which merges multi-file
++                                     selections as PAGES of one bill). Each successfully-scanned
++                                     bill is then reviewed/imported one at a time through the
++                                     exact same, unmodified Extracted Items table and Import
++                                     button below -- this only parallelizes the OCR step itself. -->
++                                <div class="glass-card" style="padding: 12px 14px; margin-bottom: 15px; border: 1px dashed var(--border-color);">
++                                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
++                                        <div>
++                                            <span class="primary-text" style="font-size:0.88rem; font-weight:600;">Batch Scan Multiple Bills</span>
++                                            <div class="secondary-text" style="font-size:0.75rem;">Select several SEPARATE invoice images to scan them in parallel, then review/import one by one below.</div>
++                                        </div>
++                                        <button class="btn btn-outline btn-sm" id="btn-browse-batch-bills">Choose Files</button>
++                                    </div>
++                                    <input type="file" id="bill-batch-file-input" accept="image/*" multiple hidden>
++                                    <div id="batch-ocr-progress" class="hidden" style="margin-top:10px;">
++                                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">
++                                            <span id="batch-ocr-progress-label">Scanning...</span>
++                                            <span id="batch-ocr-progress-pct">0%</span>
++                                        </div>
++                                        <div style="height:6px; border-radius:4px; background:rgba(255,255,255,0.08); overflow:hidden;">
++                                            <div id="batch-ocr-progress-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#00F2FE,#4FACFE); transition:width 0.2s ease;"></div>
++                                        </div>
++                                    </div>
++                                </div>
+                             </div>
+ 
+                         <!-- Manual Text Input Content -->
+@@ -883,10 +910,18 @@
+                                 <div style="display: flex; gap: 8px;">
+                                     <button class="btn btn-secondary" id="btn-discard-bill">Discard</button>
+                                 </div>
+-                                <button class="btn btn-primary" id="btn-import-bill" disabled>
+-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+-                                    Verify & Import Stock
+-                                </button>
++                                <div style="display: flex; gap: 8px; align-items: center;">
++                                    <!-- Priority 2: only visible while stepping through a Batch Scan
++                                         result set; does not alter Import/Discard logic at all, it
++                                         just loads the next already-scanned bill into this same
++                                         review form after the user is done with the current one. -->
++                                    <span id="batch-next-remaining" class="hidden" style="font-size:0.75rem; color:var(--text-muted);"></span>
++                                    <button class="btn btn-outline hidden" id="btn-batch-next">Next Scanned Bill &rarr;</button>
++                                    <button class="btn btn-primary" id="btn-import-bill" disabled>
++                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
++                                        Verify & Import Stock
++                                    </button>
++                                </div>
+                             </div>
+                         </div>
+                     </div>
