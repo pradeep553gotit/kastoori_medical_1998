@@ -2718,7 +2718,13 @@ USV L. TAZLOC 40MG 250 packs" style="width: 100%; font-family: monospace; font-s
     <script src="ocr/providers/gemini-provider.js"></script>
     <script src="ocr/providers/tesseract-provider.js"></script>
     <script src="ocr/queue.js"></script>
-    <script src="ocr/shared-parser.js"></script>
+    <script src="shared-parser.js"></script>
+    <!-- ocr/shared-parser.js (old, no invoice-noise filtering) intentionally
+         no longer loaded -- see shared-parser.js at repo root instead, which
+         fixes header/footer/GST-summary text being extracted as medicines.
+         ocr/shared-parser.js is left in place for now as dead code pending
+         cleanup, not deleted, to keep this change minimal and reversible. -->
+
     <script src="app.js"></script>
 </body>
 </html>
