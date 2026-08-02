@@ -1,0 +1,53 @@
+--- app.js (createNewMedicineFromScratch, line ~6379)
+         createNewMedicineFromScratch(rawName, rawPack) {
+             const category = this.detectCategoryFromName(rawName, rawPack);
+             const packSize = this.parsePackSize(rawPack, rawName);
+             const packNumber = this.extractPackNumber(rawPack, rawName) || packSize.tabsPerStrip || 10;
+             const code = this.generateProductCode(rawName, packNumber, category);
+             const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+ 
+             return {
+                 code,
+                 name: rawName.trim(),
+                 brand: this.getBrandFromName(rawName),
+                 drugName: "",
+                 category,
+                 pack: (rawPack || `${packNumber}'s`).toString().trim(),
+                 stock: 0,
+                 reorder: 0,
+                 cost: 0,
+                 mrp: 0,
+                 batches: [],
+-                tabsPerStrip: packSize.tabsPerStrip,
++                tabsPerStrip: packNumber,
+                 stripsPerBox: packSize.stripsPerBox,
+                 unitsPerBox: packSize.totalTablets,
+                 totalTablets: packSize.totalTablets,
+                 importedOn: nowStr,
+                 _v: 0
+             };
+         }
+ 
+         createPackSizeVariant(baseTablet, rawPack) {
+             const packSize = this.parsePackSize(rawPack, baseTablet.name);
+             const packNumber = this.extractPackNumber(rawPack, baseTablet.name) || packSize.tabsPerStrip;
+             const newCode = this.generateProductCode(baseTablet.name, packNumber, baseTablet.category);
+             const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+ 
+             return {
+                 ...baseTablet,
+                 code: newCode,
+                 pack: (rawPack || baseTablet.pack).toString().trim(),
+                 stock: 0,
+                 batches: [],
+                 importedOn: nowStr,
+-                tabsPerStrip: packSize.tabsPerStrip,
++                tabsPerStrip: packNumber,
+                 stripsPerBox: packSize.stripsPerBox,
+-                unitsPerBox: packSize.totalTablets,
+-                totalTablets: packSize.totalTablets,
++                unitsPerBox: packSize.stripsPerBox ? (packNumber * packSize.stripsPerBox) : packNumber,
++                totalTablets: packSize.stripsPerBox ? (packNumber * packSize.stripsPerBox) : packNumber,
+                 _v: 0
+             };
+         }
