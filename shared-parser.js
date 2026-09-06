@@ -164,24 +164,6 @@
     // obviously-wrong "items" cheaply and safely.
     const NOISE_LINE_RE = /\b(GSTIN|GST NO|PAN NO|CIN NO|BANK|IFSC|A\/C NO|ACCOUNT NO|TERMS?\s*(AND|&)?\s*CONDITIONS|DECLARATION|SIGNATORY|SIGNATURE|E\s*&\s*O\s*E|SUBJECT TO .* JURISDICTION|AMOUNT IN WORDS|GRAND TOTAL|SUB\s*TOTAL|TOTAL AMOUNT|NET AMOUNT|ROUND\s*OFF|RECEIVED BY|DELIVERY (CHALLAN|NOTE)|THANK YOU|PAGE\s*\d+\s*OF\s*\d+|(INVOICE|BILL)\s*(NO|NUMBER|DATE)|S(R)?\.?\s*NO\b|PARTICULARS?)\b/i;
 
-    // Order-sheet-specific noise: a hospital/ward order sheet carries an
-    // entirely different set of irrelevant fields than a supplier bill
-    // (patient/doctor/ward identifiers instead of GST/bank/terms). Kept as
-    // its own list rather than folded into NOISE_LINE_RE so bill parsing
-    // behavior is untouched -- these keywords only ever apply to type
-    // "order", never "bill".
-    const ORDER_NOISE_RE = /\b(PATIENT\s*(NAME|ID|NO|CODE|NUMBER)?|DOCTOR|DR\.?\s*NAME|NURSE|WARD\s*(NO)?|ROOM\s*(NO)?|BED\s*(NO)?|CONSULTANT|ADMISSION|DISCHARGE|DIAGNOSIS|PRESCRIB(ED|ING))\b/i;
-
-    // Marks the point in a bill's raw text where the medicine table has
-    // ended -- everything at or after this line (grand total, terms, bank
-    // details, signature block) is footer, even if a later footer line
-    // doesn't itself match NOISE_LINE_RE (e.g. an address line sitting
-    // right under "Thank you for your business" has no keyword of its
-    // own). Per-line noise filtering alone can't express "and stop
-    // entirely from here on", so table-end detection is a separate,
-    // one-way cutoff applied only to the bill item loop.
-    const TABLE_END_RE = /\b(GRAND\s*TOTAL|SUB\s*TOTAL|TOTAL AMOUNT|NET AMOUNT|TERMS?\s*(AND|&)?\s*CONDITIONS|DECLARATION|THANK YOU|RECEIVED BY|AUTHORIZED SIGNATORY)\b/i;
-
     // A crude but effective sanity check for the OCR-garbling failure mode
     // seen on real bills (Tesseract mis-segmenting a table into strings of
     // 1-3 letter pseudo-tokens, e.g. "TARAM AO I PEER WE 7 7"). A real
@@ -196,14 +178,18 @@
     function looksGarbled(name) {
         if (!name) return true;
         const tokens = name.split(/\s+/).filter(Boolean);
-        if (tokens.length < 2) return false; // single-token names are normal, not a fragmentation symptom
+        if (tokens.length < 2) {
+            // A single very short token (e.g. "ARN") is a common OCR
+            // fragmentation symptom -- a real single-word medicine name is
+            // almost always 5+ characters (PARACETAMOL, AMOXICILLIN, ...).
+            return tokens.length === 1 && tokens[0].length <= 4;
+        }
         const shortTokenRatio = tokens.filter(t => t.length <= 2).length / tokens.length;
         return shortTokenRatio > 0.5; // more than half the "words" are 1-2 characters
     }
 
-    function isNoiseLine(line, type) {
+    function isNoiseLine(line) {
         if (NOISE_LINE_RE.test(line)) return true;
-        if (type === "order" && ORDER_NOISE_RE.test(line)) return true;
         // A line that's almost entirely digits/punctuation (e.g. a lone
         // totals figure, a page number) is never a medicine row on its own.
         const letters = (line.match(/[A-Za-z]/g) || []).length;
@@ -224,15 +210,7 @@
     // removes the existing fallback behavior.
     const INVOICE_NO_RE = /\b(?:INVOICE|BILL)\s*(?:NO|NUMBER|#)?[:\s.\-]*([A-Z0-9\/\-]{3,20})\b/i;
     const INVOICE_DATE_RE = /\b(?:INVOICE|BILL)\s*DATE[:\s.\-]*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\b/i;
-    const PURCHASE_DATE_RE = /\bPURCHASE\s*DATE[:\s.\-]*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\b/i;
     const GENERIC_DATE_RE = /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\b/;
-    // Indian GSTIN format: 2-digit state code + 10-char PAN + 1 entity code
-    // + Z + 1 checksum char, e.g. "33ABCDE1234F1Z5".
-    const GSTIN_RE = /\b(\d{2}[A-Z]{5}\d{4}[A-Z]\d[A-Z]\d)\b/i;
-    const GRAND_TOTAL_RE = /\bGRAND\s*TOTAL[:\s.\-]*₹?\s*(\d+(?:,\d{2,3})*(?:\.\d{1,2})?)/i;
-    const TAX_AMOUNT_RE = /\b(?:TAX|GST)\s*AMOUNT[:\s.\-]*₹?\s*(\d+(?:,\d{2,3})*(?:\.\d{1,2})?)/i;
-    const DISCOUNT_AMOUNT_RE = /\bDISCOUNT(?:\s*AMOUNT)?[:\s.\-]*₹?\s*(\d+(?:,\d{2,3})*(?:\.\d{1,2})?)/i;
-    const TOTAL_ITEMS_RE = /\bTOTAL\s*ITEMS?[:\s.\-]*(\d+)\b/i;
 
     function toIsoDate(raw) {
         if (!raw) return null;
@@ -244,49 +222,35 @@
         return `${y}-${mo}-${d}`;
     }
 
-    function toNumber(raw) {
-        if (!raw) return null;
-        const n = parseFloat(raw.replace(/,/g, ""));
-        return isNaN(n) ? null : n;
-    }
-
     function extractHeaderFields(text) {
         const invoiceNoMatch = text.match(INVOICE_NO_RE);
         const invoiceDateMatch = text.match(INVOICE_DATE_RE) || text.match(GENERIC_DATE_RE);
-        const purchaseDateMatch = text.match(PURCHASE_DATE_RE);
-        const gstinMatch = text.match(GSTIN_RE);
-        const grandTotalMatch = text.match(GRAND_TOTAL_RE);
-        const taxAmountMatch = text.match(TAX_AMOUNT_RE);
-        const discountMatch = text.match(DISCOUNT_AMOUNT_RE);
-        const totalItemsMatch = text.match(TOTAL_ITEMS_RE);
         return {
             invoice_number: invoiceNoMatch ? invoiceNoMatch[1] : "",
-            invoice_date: invoiceDateMatch ? (toIsoDate(invoiceDateMatch[1]) || "") : "",
-            purchase_date: purchaseDateMatch ? (toIsoDate(purchaseDateMatch[1]) || "") : "",
-            supplier_gst_number: gstinMatch ? gstinMatch[1].toUpperCase() : "",
-            grand_total: toNumber(grandTotalMatch ? grandTotalMatch[1] : null),
-            tax_amount: toNumber(taxAmountMatch ? taxAmountMatch[1] : null),
-            discount_amount: toNumber(discountMatch ? discountMatch[1] : null),
-            total_items: totalItemsMatch ? parseInt(totalItemsMatch[1], 10) : null
+            invoice_date: invoiceDateMatch ? (toIsoDate(invoiceDateMatch[1]) || "") : ""
         };
     }
 
     function parseLocalText(text, type, options = {}) {
-        const rawLines = cleanLines(text);
+        // Preferred path: real bounding-box-based table row reconstruction
+        // (see ocr/table-reconstructor.js). This is what actually fixes the
+        // root cause of the fake-row failures -- rows are only created when
+        // there is real page-position AND multi-signal evidence for them,
+        // instead of "OCR found a line of text, therefore it's a medicine".
+        // Falls back to the old flattened-text line parser when no word
+        // boxes were provided (e.g. order-sheet flow, or a caller that
+        // hasn't been updated yet) -- unchanged behavior in that case.
+        let candidateLines;
+        if (type === "bill" && Array.isArray(options.words) && options.words.length && global.OCRTableReconstructor) {
+            candidateLines = global.OCRTableReconstructor.getMedicineCandidateRows(options.words).map(r => r.text);
+        } else {
+            candidateLines = cleanLines(text).filter(l => !isNoiseLine(l));
+        }
+
         const items = [];
-        for (const line of rawLines) {
-            // Table-end cutoff (bill only): once we hit the totals/terms/
-            // signature block, everything from here on is footer -- stop
-            // considering further lines as medicine rows entirely, rather
-            // than relying on each individual line matching a noise
-            // keyword (an address or blank-ish line right after "Grand
-            // Total" has no keyword of its own to be caught by).
-            if (type === "bill" && TABLE_END_RE.test(line)) break;
-            if (isNoiseLine(line, type)) continue;
-
+        candidateLines.forEach(line => {
             const item = type === "bill" ? parseBillLine(line, options.fallbackSupplier) : parseOrderLine(line);
-            if (!item) continue;
-
+            if (!item) return;
             if (type === "bill" && looksGarbled(item.medicine_name)) {
                 // Don't silently drop it (a real, oddly-formatted name could
                 // trip this heuristic too) -- just force it into manual
@@ -296,18 +260,8 @@
                 item.field_confidence = Object.assign({}, item.field_confidence, { brand_name: 15 });
                 item.needsReview = true;
             }
-            if (type === "order") {
-                // Empty rows (spec: ignore "Empty Rows") -- a row with no
-                // quantity and nothing else useful extracted is noise, not
-                // a real order line.
-                if (!item.quantity_tablets && !item.strength && !item.pack) continue;
-                if (looksGarbled(item.medicine_name)) {
-                    item.confidence.brand = Math.min(item.confidence.brand, 15);
-                    item.needsReview = true;
-                }
-            }
             items.push(item);
-        }
+        });
 
         if (type === "bill") {
             const header = extractHeaderFields(text);
@@ -315,12 +269,6 @@
                 supplier_name: options.fallbackSupplier || "",
                 invoice_number: header.invoice_number,
                 invoice_date: header.invoice_date,
-                purchase_date: header.purchase_date,
-                supplier_gst_number: header.supplier_gst_number,
-                grand_total: header.grand_total,
-                tax_amount: header.tax_amount,
-                discount_amount: header.discount_amount,
-                total_items: header.total_items,
                 items,
                 confidence_score: items.length ? Math.round(items.reduce((a, i) => a + i.confidence_score, 0) / items.length) : 0
             };

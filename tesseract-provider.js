@@ -86,16 +86,28 @@
             const confidence = (result && result.data && typeof result.data.confidence === "number")
                 ? Math.round(result.data.confidence)
                 : null;
+            // Word-level bounding boxes -- previously discarded, now the
+            // basis for real table-row reconstruction (see
+            // ocr/table-reconstructor.js) instead of trusting Tesseract's
+            // own text-flow ordering, which is unreliable on multi-column
+            // invoice tables.
+            const words = (result && result.data && Array.isArray(result.data.words))
+                ? result.data.words.map(w => ({
+                    text: w.text,
+                    confidence: w.confidence,
+                    bbox: w.bbox || (w.bbox0 ? w.bbox0 : null)
+                })).filter(w => w.bbox)
+                : [];
 
             if (typeof onProgress === "function") {
                 onProgress({ phase: confidence !== null ? "success" : "warning", attempt: 1, total: 1, model: "tesseract-local" });
             }
 
             return {
-                text,          // plain text, NOT parsed JSON -- see header note
+                text,          // plain text, kept as a fallback -- see header note
                 confidence,
                 provider: "tesseract",
-                metadata: { local: true, note: "Plain text only -- no structured field extraction." }
+                metadata: { local: true, words, note: "Structured rows come from word bounding boxes (see table-reconstructor.js), not from this flattened text." }
             };
         }
 

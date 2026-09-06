@@ -12816,7 +12816,7 @@ ${rawText}`;
                 let structured = raw.text;
                 try {
                     if (window.OCRSharedParser && typeof raw.text === "string") {
-                        structured = window.OCRSharedParser.parseLocalText(raw.text, type, { fallbackSupplier });
+                        structured = window.OCRSharedParser.parseLocalText(raw.text, type, { fallbackSupplier, words: raw.metadata && raw.metadata.words });
                     }
                 } catch (e) {
                     console.warn("[OCR] Shared parser failed on local OCR text, returning empty item set:", e);
