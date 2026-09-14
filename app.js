@@ -6558,10 +6558,10 @@
                 // nothing here actually stopped it from being imported
                 // anyway.
                 const rowConfidence = row.dataset.confidence ? parseInt(row.dataset.confidence) : null;
-                if (rowConfidence !== null && !isNaN(rowConfidence) && rowConfidence < 80) {
+                if (rowConfidence === null || isNaN(rowConfidence) || rowConfidence < 90) {
                     this.triggerNotification(
                         "Bill Processing", "Low confidence row blocked from import",
-                        `🟠 Low Confidence Row\nMedicine: ${name}\nConfidence: ${rowConfidence}%\nThis row must be manually reviewed and corrected before the invoice can be imported.`,
+                        `🟠 Low Confidence Row\nMedicine: ${name}\nConfidence: ${rowConfidence !== null && !isNaN(rowConfidence) ? rowConfidence + "%" : "Unknown"}\nThis row must be manually reviewed and corrected before the invoice can be imported.`,
                         "Warning", { medicineName: name, invoiceNo: invoiceNoInputVal }
                     );
                     row.classList.add("expiring-orange-glow");
@@ -12044,7 +12044,7 @@ ${rawText}`;
                     notFoundCount++;
                 }
 
-                const displayConf = billItem.confidence_score !== null && billItem.confidence_score !== undefined ? billItem.confidence_score : 100;
+                const displayConf = billItem.confidence_score !== null && billItem.confidence_score !== undefined ? billItem.confidence_score : 0;
                 confSum += displayConf;
                 confCount++;
 
@@ -12100,7 +12100,7 @@ ${rawText}`;
                 tableBody.appendChild(headerTr);
 
                 itemsInCategory.forEach(({ billItem, match }) => {
-                    const displayConf = billItem.confidence_score !== null && billItem.confidence_score !== undefined ? billItem.confidence_score : 100;
+                    const displayConf = billItem.confidence_score !== null && billItem.confidence_score !== undefined ? billItem.confidence_score : 0;
                     let validationStatus = this.validateExtractedItem(billItem);
                     if (billItem.status === "manual_review") {
                         validationStatus = "manual_review";
@@ -12108,7 +12108,7 @@ ${rawText}`;
 
                     let rowGlowClass = "";
                     const isUnmatched = !match;
-                    const isLowConf = displayConf < 80;
+                    const isLowConf = displayConf < 90;
 
                     if (validationStatus === "rejected") {
                         rowGlowClass = "expired-red-glow";
@@ -12217,7 +12217,7 @@ ${rawText}`;
             });
 
             // Update preview dashboard details
-            const avgConf = confCount > 0 ? Math.round(confSum / confCount) : 95;
+            const avgConf = confCount > 0 ? Math.round(confSum / confCount) : 0;
             const summaryCard = document.getElementById("ocr-summary-card");
             if (summaryCard) {
                 summaryCard.classList.remove("hidden");
@@ -13502,7 +13502,7 @@ IMPORTANT: Your previous response could not be parsed as JSON. This time, respon
                     cost: costVal,
                     mrp: mrpVal,
                     gst: item.gst_percent || "5%",
-                    confidence_score: item.confidence_score !== undefined && item.confidence_score !== null ? parseInt(item.confidence_score) : 95,
+                    confidence_score: item.confidence_score !== undefined && item.confidence_score !== null ? parseInt(item.confidence_score) : null,
                     // Was being read from Gemini's response and then silently
                     // dropped here -- this object is what everything
                     // downstream (validateExtractedItem, renderExtractedItems)
@@ -13588,7 +13588,16 @@ Return your response in JSON format matching this schema:
             // exactly as it always has, regardless of which provider
             // produced it.
             const _preStart = performance.now();
-            const preprocessed = await this.preprocessImageForOCR(base64Data, mimeType);
+            const preprocessed = await this.preprocessImageForOCR(base64Data, mimeType, {
+                autoRotate: true,
+                deskew: true,
+                autoCrop: true,
+                normalizeBrightness: true,
+                denoise: true,
+                contrast: true,
+                sharpen: true,
+                adaptiveThreshold: false
+            });
             const preprocessingMs = Math.round(performance.now() - _preStart);
 
             const result = await this.recognizeWithProviderFallback(
@@ -13844,10 +13853,10 @@ Return your response in JSON format matching this schema:
 
             // OCR confidence below threshold check
             const _overallConf = validatedData.confidence_score;
-            if (_overallConf !== undefined && _overallConf < 85) {
+            if (_overallConf === undefined || _overallConf === null || _overallConf < 90) {
                 this.triggerNotification(
                     "OCR", "OCR confidence below threshold",
-                    `🟠 Low OCR Confidence\nOverall confidence: ${_overallConf}%\nInvoice: ${invoiceNo || "unknown"}\nSome text may be misread. Please review all extracted values carefully.`,
+                    `🟠 Low OCR Confidence\nOverall confidence: ${_overallConf !== undefined && _overallConf !== null ? _overallConf + "%" : "Unknown"}\nInvoice: ${invoiceNo || "unknown"}\nSome text may be misread. Please review all extracted values carefully.`,
                     "Warning", { invoiceNo: invoiceNo, ocrConfidence: _overallConf }
                 );
             }
@@ -14307,7 +14316,8 @@ Return your response in JSON format matching this schema:
             const isValidBatch = item.batch !== null && item.batch !== undefined && (item.batch || "").trim().length > 0 && /[a-zA-Z0-9]/.test(item.batch);
             
             if (!isValidExp || !isNumericQty || !isValidMrp || !isValidBatch) {
-                item.confidence_score = Math.min(item.confidence_score || 100, 75);
+                const currentConf = item.confidence_score !== undefined && item.confidence_score !== null && !isNaN(parseInt(item.confidence_score)) ? parseInt(item.confidence_score) : 0;
+                item.confidence_score = Math.min(currentConf, 75);
                 if (!isValidBatch) {
                     this.triggerNotification("Bill Processing", "Batch number missing",
                         "Batch Number Missing\nMedicine: " + name + "\nA batch number is required before stock-in.",
@@ -14333,20 +14343,22 @@ Return your response in JSON format matching this schema:
             // which could still be high if every other field was clear.
             const fieldConf = item.field_confidence;
             if (fieldConf && typeof fieldConf === "object" && fieldConf.strength !== undefined && fieldConf.strength < 80) {
-                item.confidence_score = Math.min(item.confidence_score || 100, 79);
+                const currentConf = item.confidence_score !== undefined && item.confidence_score !== null && !isNaN(parseInt(item.confidence_score)) ? parseInt(item.confidence_score) : 0;
+                item.confidence_score = Math.min(currentConf, 89);
                 this.triggerNotification("Bill Processing", "Low confidence on Strength",
                     "Low OCR Confidence on Strength\nMedicine: " + name + "\nPlease verify the strength before this is added to inventory.",
                     "Warning", { medicineName: name });
                 return "manual_review";
             }
 
-            const initialConf = item.confidence_score !== undefined && item.confidence_score !== null ? parseInt(item.confidence_score) : 100;
+            const initialConf = item.confidence_score !== undefined && item.confidence_score !== null && !isNaN(parseInt(item.confidence_score)) ? parseInt(item.confidence_score) : 0;
             let combinedConf = Math.min(initialConf, matchScore);
             item.confidence_score = combinedConf;
 
-            // Confidence tiers: > 95 auto-continue (valid), 80-95 highlighted
-            // yellow (warning, still importable), < 80 requires user review.
-            if (combinedConf < 80) {
+            // Confidence tiers: >= 90 can continue only after structure and
+            // Master Data matching pass. Anything lower, including unknown
+            // confidence promoted to 0 above, requires Manual Review.
+            if (combinedConf < 90) {
                 return "manual_review";
             }
             if (combinedConf <= 95) {
@@ -14451,11 +14463,11 @@ Return your response in JSON format matching this schema:
             // "never merge different strengths" requirement.
             row.dataset.confidence = item.confidence_score !== null && item.confidence_score !== undefined ? item.confidence_score.toString() : "";
 
-            const displayConf = item.confidence_score !== null && item.confidence_score !== undefined ? item.confidence_score : 100;
+            const displayConf = item.confidence_score !== null && item.confidence_score !== undefined ? item.confidence_score : 0;
             const confidenceCell = row.querySelector(".confidence-cell");
             if (confidenceCell) {
                 let confColor = "#10B981"; // success
-                if (displayConf < 80) {
+                if (displayConf < 90) {
                     confColor = "#EF4444"; // error
                 } else if (displayConf < 95) {
                     confColor = "#F59E0B"; // warning
@@ -14470,7 +14482,7 @@ Return your response in JSON format matching this schema:
             const match = this.resolveMedicine(name, null, tablets).tablet;
             const selectedCode = match ? match.code : "";
             const isUnmatched = !selectedCode;
-            const isLowConf = displayConf < 80;
+            const isLowConf = displayConf < 90;
 
             let statusHTML = "";
             if (validationStatus === "rejected") {

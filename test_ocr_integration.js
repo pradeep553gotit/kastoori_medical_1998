@@ -67,7 +67,7 @@ check("Shared parser (order) confidence object matches Gemini's shape",
 check("Shared parser (order) confidence values are capped low (heuristic fallback, forces manual review)",
     orderParsed.items.every(it => it.confidence.brand <= 65 && it.confidence.strength <= 65));
 
-const billText = "AZITHROMYCIN 500MG BATCH AZ2201 03/27 MRP 145.50 GST 12%";
+const billText = "AZITHROMYCIN 500MG TAB BATCH AZ2201 03/27 10s 4 MRP 145.50 GST 12%";
 const billParsed = OCRSharedParser.parseLocalText(billText, "bill", { fallbackSupplier: "ABC Distributors" });
 check("Shared parser (bill) returns an items array", Array.isArray(billParsed.items));
 check("Shared parser (bill) extracted batch_number", billParsed.items[0] && billParsed.items[0].batch_number === "AZ2201");
@@ -75,8 +75,8 @@ check("Shared parser (bill) extracted expiry_date as MM/YYYY", billParsed.items[
 check("Shared parser (bill) extracted mrp", billParsed.items[0] && billParsed.items[0].mrp === 145.5);
 check("Shared parser (bill) confidence_score is capped low (55), guaranteeing existing <80 manual_review gate fires",
     billParsed.items[0] && billParsed.items[0].confidence_score === 55);
-check("Shared parser (bill) leaves quantity null rather than guessing a number",
-    billParsed.items[0] && billParsed.items[0].quantity === null);
+check("Shared parser (bill) extracts quantity only from a plausible table row",
+    billParsed.items[0] && billParsed.items[0].quantity === 4);
 check("Shared parser (bill) carries the fallback supplier through",
     billParsed.items[0] && billParsed.items[0].supplier_name === "ABC Distributors");
 

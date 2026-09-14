@@ -35,6 +35,10 @@
     const MRP_RE = /\bM\.?R\.?P\.?[:\s]*₹?\s*(\d+(?:\.\d+)?)/i;
     const GST_RE = /\bG\.?S\.?T\.?[:\s]*(\d+(?:\.\d+)?)\s*%?/i;
     const CURRENCY_RE = /₹?\s*(\d+(?:\.\d{1,2})?)\b/;
+    const DOSAGE_FORM_RE = /\b(TABLET|TABLETS|TAB|TABS|CAPSULE|CAPSULES|CAP|CAPS|SYRUP|SYP|SUSPENSION|SUSP|INJECTION|INJ|DROPS?|GEL|CREAM|OINTMENT|LOTION|SPRAY|INHALER|ROTACAPS?|RESPULES?)\b/i;
+    const PHONE_RE = /\b(?:\+?91[\s-]?)?[6-9]\d{9}\b|\b(?:PHONE|MOBILE|PH|TEL)[:\s-]*\d/i;
+    const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
+    const ADDRESS_RE = /\b(STREET|ROAD|RD\.?|NAGAR|COLONY|BUILDING|TOWER|FLOOR|CHENNAI|TAMIL\s*NADU|PIN\s*CODE|PINCODE)\b/i;
 
     function cleanLines(text) {
         return (text || "")
@@ -101,7 +105,8 @@
         let working = line;
 
         const batchMatch = working.match(BATCH_RE);
-        const batch_number = batchMatch ? batchMatch[1] : null;
+        const looseBatchMatch = working.match(/\b[A-Z]{1,4}\d[A-Z0-9\-\/]{2,14}\b/);
+        const batch_number = batchMatch ? batchMatch[1] : (looseBatchMatch ? looseBatchMatch[0] : null);
 
         const expiryMatch = working.match(EXPIRY_RE);
         let expiry_date = null;
@@ -118,12 +123,29 @@
 
         const strengthMatch = working.match(STRENGTH_UNIT_RE);
         const strength = strengthMatch ? strengthMatch[1] : "";
+        const packMatch = working.match(PACK_RE);
+        const qtyMatch = working.match(/\b(\d{1,5})\b(?=\s+(?:\d+(?:\.\d{1,2})|₹|MRP|M\.R\.P))/i);
+        const quantity = qtyMatch ? parseInt(qtyMatch[1], 10) : null;
+
+        if (!isPlausibleBillTableRow(working, {
+            batch_number,
+            expiry_date,
+            mrp,
+            strength,
+            pack_size: packMatch ? packMatch[0] : null,
+            quantity
+        })) {
+            return null;
+        }
 
         let stripped = working;
         if (batchMatch) stripped = stripped.replace(batchMatch[0], " ");
+        if (!batchMatch && looseBatchMatch) stripped = stripped.replace(looseBatchMatch[0], " ");
         if (expiryMatch) stripped = stripped.replace(expiryMatch[0], " ");
         if (mrpMatch) stripped = stripped.replace(mrpMatch[0], " ");
         if (gstMatch) stripped = stripped.replace(gstMatch[0], " ");
+        if (packMatch) stripped = stripped.replace(packMatch[0], " ");
+        if (qtyMatch) stripped = stripped.replace(qtyMatch[0], " ");
         const medicine_name = stripped.replace(/[^A-Za-z0-9\s\-]/g, " ").replace(/\s+/g, " ").trim();
         if (!medicine_name) return null;
 
@@ -132,11 +154,8 @@
             brand_name: medicine_name,
             batch_number,
             expiry_date,
-            pack_size: null,
-            quantity: null,      // deliberately left null -- quantity on a
-                                  // bill line is too error-prone to guess
-                                  // from plain text; forces manual entry
-                                  // rather than a fabricated number.
+            pack_size: packMatch ? packMatch[0].toUpperCase().replace(/\s+/g, "") : null,
+            quantity,
             free_qty: 0,
             discount_percent: "0%",
             purchase_rate: mrp !== null ? Math.round((mrp / 1.4) * 100) / 100 : null,
@@ -147,11 +166,41 @@
             field_confidence: {
                 brand_name: fieldConf(true),
                 strength: fieldConf(!!strengthMatch),
-                batch_number: fieldConf(!!batchMatch),
+                batch_number: fieldConf(!!batch_number),
                 expiry_date: fieldConf(!!expiryMatch),
+                pack_size: fieldConf(!!packMatch),
+                quantity: fieldConf(quantity !== null),
                 mrp: fieldConf(!!mrpMatch)
             }
         };
+    }
+
+    function isPlausibleBillTableRow(line, fields) {
+        if (!line || PHONE_RE.test(line) || EMAIL_RE.test(line) || ADDRESS_RE.test(line)) return false;
+        if (NOISE_LINE_RE.test(line)) return false;
+        if (/\b\d{2}[A-Z]{5}\d{4}[A-Z]\d[A-Z]\d\b/i.test(line)) return false; // GSTIN/PAN-like tax id, not a row.
+
+        const hasBatch = !!fields.batch_number;
+        const hasExpiry = !!fields.expiry_date;
+        const hasPrice = fields.mrp !== null && !isNaN(fields.mrp);
+        const hasStrength = !!fields.strength;
+        const hasPack = !!fields.pack_size;
+        const hasQty = fields.quantity !== null && !isNaN(fields.quantity) && fields.quantity > 0;
+        const hasDosage = DOSAGE_FORM_RE.test(line);
+        const tableSignals = [hasBatch, hasExpiry, hasPrice, hasStrength, hasPack, hasQty, hasDosage].filter(Boolean).length;
+
+        // Supplier bill rows need a row-like combination of batch/expiry/price
+        // plus medicine cues. Loose letterhead or address text must not become
+        // inventory candidates just because OCR saw a number nearby.
+        if (!hasExpiry || !hasPrice) return false;
+        if (!hasBatch && !(hasStrength && (hasPack || hasDosage))) return false;
+        if (tableSignals < 4) return false;
+
+        const letters = (line.match(/[A-Za-z]/g) || []).length;
+        const digits = (line.match(/\d/g) || []).length;
+        if (letters < 4 || digits < 4) return false;
+
+        return true;
     }
 
     // Lines that are clearly invoice header/footer/GST-summary noise, not
